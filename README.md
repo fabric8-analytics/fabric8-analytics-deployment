@@ -1,7 +1,7 @@
 # Developing fabric8-analytics
 
 This section is for those interested in contributing to the development of
-fabric8-analytics. Please read through our [glossary](../docs/glossary.md) in
+fabric8-analytics. Please read through our [glossary](./glossary.md) in
 case you are not sure about terms used in the docs.
 
 ## Running a Local Instance
@@ -93,7 +93,7 @@ down as necessary.
 
 ### Running in OpenShift
 
-TBD :)
+For running in openshift refer to [README in openshift directory](./openshift/README.md)
 
 ### Accessing Services, Logs and Other Interesting Stuff
 
@@ -124,7 +124,7 @@ the "follow" mode).
 
 ## Integration tests
 
-Refer to the [integration testing README](../integration-tests/README.md)
+Refer to the [integration testing README](https://github.com/fabric8-analytics/fabric8-analytics-common/blob/master/integration-tests/README.md)
 
 ## Worker types
 
