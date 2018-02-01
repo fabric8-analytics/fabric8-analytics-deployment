@@ -15,7 +15,7 @@ Git, and possibly other packages, depending on how you want to run the system
 
 ### Getting the Code
 
-First of all, clone the `common` repo (this one). This includes all
+First of all, clone the `fabric8-analytics-deployment` repo (this one). This includes all
 the configuration for running the whole system as well as some helper
 scripts and docs.
 
