@@ -174,12 +174,6 @@ services:
       # If no Github API token is provided, requests will be unauthenticated, i.e. limited to 60 per hour
       # Generate your token @ https://github.com/settings/tokens
       #GITHUB_TOKEN: ""
-      #BLACKDUCK_HOST: ""
-      #BLACKDUCK_SCHEME: ""
-      #BLACKDUCK_PORT: ""
-      #BLACKDUCK_USERNAME: ""
-      #BLACKDUCK_PASSWORD: ""
-      #BLACKDUCK_PATH: ""
       JACCARD_THRESHOLD: 0.4
       SIMILARITY_SCORE_THRESHOLD: 0.4
       MAX_COMPANION_PACKAGES: 5
