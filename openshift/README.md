@@ -2,27 +2,28 @@
 
 ## Install required tools
 
-Use your preferred package manager to install awk, aws-cli, psql, origin-clients, pwgen
+Use your preferred package manager to install aws-cli, psql, origin-clients, pwgen
 
 on Fedora:
-`sudo dnf install gawk awscli pwgen postgresql origin-clients`
+`sudo dnf install awscli pwgen postgresql origin-clients`
 
 Mac users will require to install gawk from brew.
 
 ## Configure fabric8-analytics services
+
 All configuration for the deployment script resides in env.sh.
-To configure your development deployment copy env-template.sh
+To configure your development deployment copy [env-template.sh](env-template.sh) to env.sh
 
 `cp env-template.sh env.sh`
 
-Update variables with your AWS,Openshift and Github credentials.
+Update variables with your AWS, Openshift and Github credentials.
 
 ### Generate RDS pasword
 
-To generate password you will require tool named pwgen.
+To generate password you will require tool named `pwgen`.
 `pwgen -1cs 32`
 
-Use generated password to update RDS_PASSWORD value
+Use generated password to update RDS_PASSWORD value.
 
 ### Run oc login
 
@@ -32,6 +33,7 @@ We need to log in using the command line and accept the certificate.
 `oc login $OC_URI -u $OC_USERNAME -p $OC_PASSWD`
 
 ## Deploy fabric8-analytics services
+
 Just run the deploy script and enjoy!
 
 `$./deploy.sh`
@@ -47,14 +49,23 @@ Once you know that you no longer need the fabric8-analytics deployment, you can 
 
 to remove the Openshift project and all allocated AWS resources.
 
-## Deploy your changes to dev-cluster
+### Dockerized deployment scripts
+
+There's also [Dockerfile](Dockerfile) and [Makefile](Makefile) to run these scripts in docker container to avoid installing the required tools.
+Just prepare your `env.sh` and run
+
+- `make deploy` to (re-)deploy to Openshift
+- `make clean-deploy` to purge fabric8-analytics project from Openshift along with allocated AWS resources and (re-)deploy
+- `make clean` to remove fabric8-analytics project from Openshift along with allocated AWS resources
+
+## Test not yet merged changes
 
 Assume you have opened a PR in one of the [fabric8-analytics](https://github.com/fabric8-analytics) repositories.
 Once tests pass in the PR, [CentosCI](https://ci.centos.org) builds your image and adds a similar comment to the PR:
 
 `Your image is available in the registry: docker pull registry.devshift.net/fabric8-analytics/worker-scaler:SNAPSHOT-PR-25`
 
-To update your dev deployment you can use one the following ways:
+To update your dev deployment to use the above mentioned image you can use one the following ways:
 
 - [oc edit](https://docs.openshift.com/container-platform/3.4/cli_reference/basic_cli_operations.html#edit) from command line
 - editor in web interface: `Applications` -> `Deployments` -> select deployment -> `Actions` -> `Edit YAML`
