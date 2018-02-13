@@ -70,7 +70,7 @@ $ sudo ./docker-compose.sh build --pull
 
 #### Secrets
 
-Some parts (GithubTask, BlackDuckTask) need credentials
+Some parts (GithubTask, LibrariesIoTask) need credentials
 for proper operation. You can provide environment variables in `worker_environment`
 in `docker-compose.yml`.
 
