@@ -189,6 +189,11 @@ services:
       BAYESIAN_DATA_IMPORTER_SERVICE_HOST: "data-model-importer"
       BAYESIAN_DATA_IMPORTER_SERVICE_PORT: "9192"
       SCANCODE_PROCESSES: "4"
+      # 'no-token' value forces the API call to not use ANY token.
+      # It works, but if abused, they can ban your IP.
+      # So if you need to analyse big number of packages locally,
+      # set this to your API Key (get it from https://libraries.io/account)
+      LIBRARIES_IO_TOKEN: "no-token"
     tty: true  # yes, really -ti -d, binwalk chokes when there's no tty kept open
   worker-ingestion:
     <<: *worker
