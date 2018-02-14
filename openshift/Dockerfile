@@ -7,12 +7,13 @@ ENV LANG=en_US.UTF-8
 # install repositories for latest stable origin and PostgreSQL 9.4 
 RUN yum --setopt=tsflags=nodocs install -y epel-release centos-release-openshift-origin36 && \
     yum --setopt=tsflags=nodocs install -y https://download.postgresql.org/pub/repos/yum/9.4/redhat/rhel-7-x86_64/pgdg-centos94-9.4-3.noarch.rpm &&\
-    yum --setopt=tsflags=nodocs install -y postgresql awscli awk pwgen origin-clients &&\
-    yum clean all
+    yum --setopt=tsflags=nodocs install -y postgresql awscli origin-clients python34-pip &&\
+    yum clean all &&\
+    pip3 install boto3
 
 RUN mkdir -p /home/deployer/templates/
 
-COPY env.sh deploy.sh secrets-template.yaml config-template.yaml /home/deployer/
+COPY env.sh deploy.sh helpers.sh purge_AWS_resources.py cleanup.sh secrets-template.yaml config-template.yaml /home/deployer/
 
 WORKDIR /home/deployer
 
