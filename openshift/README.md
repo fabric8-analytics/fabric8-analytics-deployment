@@ -1,4 +1,4 @@
-# Openshift green field deployment of fabric8-analytics services
+# OpenShift green field deployment of fabric8-analytics services
 
 ## Install required tools
 
@@ -75,14 +75,22 @@ To update your dev deployment to use the above mentioned image you can use one t
 
 ### Configure OSIO token
 
-In your created env.sh set the RECOMMENDER_API_TOKEN.
-Token is available on your profile page after clicking on Update profile button.
+If you want to run E2E tests, you will need to configure `RECOMMENDER_API_TOKEN` variable in your `env.sh` file.
+You can get the token on your [openshift.io](http://openshift.io) profile page after clicking on the "Update Profile" button.
 
-You will have to change email adress to one asssociated with your osio account [Quick Link](https://openshift.io/thrcka@redhat.com/_update)
+### Run E2E tests against your deployment
 
-### Run E2E test agaist your deployment
+First clone [E2E tests](https://github.com/fabric8-analytics/fabric8-analytics-common/tree/master/integration-tests)
+(`git clone git@github.com:fabric8-analytics/fabric8-analytics-common.git`) repository, if you haven't done so already.
 
-Environment variables are set by running the script.
-`./run-e2e-test.sh`
+Then prepare your environment (you'll need your API token for this, see the previous section):
 
-[More information](https://github.com/fabric8-analytics/fabric8-analytics-common/tree/master/integration-tests)
+```shell
+source env.sh
+```
+
+And finally run the tests in the same terminal window:
+```shell
+cd fabric8-analytics-common/integration-tests/
+./runtest.sh
+```
