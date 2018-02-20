@@ -1,3 +1,9 @@
+fabric8-analytics-data-model/
+fabric8-analytics-jobs/
+fabric8-analytics-pgbouncer/
+fabric8-analytics-server/
+fabric8-analytics-worker/
+
 # ---> Python
 
 # Ignore testing artifacts
