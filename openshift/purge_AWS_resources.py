@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""Operations to purge/delete previously allocated AWS resources."""
+"""Operations to delete previously allocated AWS resources."""
 
 import argparse
 import boto3
@@ -16,17 +16,17 @@ _DEPLOYMENT_PREFIX = getenv('DEPLOYMENT_PREFIX')
 
 
 class AWSCleaner(object):
-    """Operations to purge/delete previously allocated AWS resources."""
+    """Operations to delete previously allocated AWS resources."""
 
     def __init__(self, tag):
         """Initialize object."""
         self.tag = tag
 
-    def purge_sqs_queues(self):
-        """Purge/Delete SQS queues.
+    def delete_sqs_queues(self):
+        """Delete SQS queues.
 
         If tag was specified during object creation, then delete all queues tagged with this tag.
-        Else purge (remove messages from) all _DEPLOYMENT_PREFIX_ prefixed queues.
+        Else delete all _DEPLOYMENT_PREFIX_ prefixed queues.
         """
         client = boto3.client('sqs',
                               aws_access_key_id=_AWS_ACCESS_KEY_ID,
@@ -46,7 +46,7 @@ class AWSCleaner(object):
                     print("Deleting", queue.url)
                     client.delete_queue(QueueUrl=queue.url)
         else:
-            print("About to purge %r prefixed SQS queues." % _DEPLOYMENT_PREFIX)
+            print("About to delete %r prefixed SQS queues." % _DEPLOYMENT_PREFIX)
             for queue in chain(
                     # Supply more than just _DEPLOYMENT_PREFIX to QueueNamePrefix
                     # to avoid purging wrong queues.
@@ -54,14 +54,14 @@ class AWSCleaner(object):
                     resource.queues.filter(QueueNamePrefix=_DEPLOYMENT_PREFIX + '_ingestion_'),
                     resource.queues.filter(QueueNamePrefix=_DEPLOYMENT_PREFIX + '_priority_'),
                     resource.queues.filter(QueueNamePrefix=_DEPLOYMENT_PREFIX + '_livenessFlow_')):
-                print("Deleting messages from", queue.url)
-                client.purge_queue(QueueUrl=queue.url)
+                print("Deleting", queue.url)
+                client.delete_queue(QueueUrl=queue.url)
 
-    def purge_s3_buckets(self):
-        """Purge/Delete S3 buckets.
+    def delete_s3_buckets(self):
+        """Delete S3 buckets.
 
         If tag was specified during object creating, then delete all buckets tagged with this tag.
-        Else purge (remove objects from) all _DEPLOYMENT_PREFIX_ prefixed buckets.
+        Else delete all _DEPLOYMENT_PREFIX_ prefixed buckets.
         """
         s3 = boto3.resource('s3',
                             aws_access_key_id=_AWS_ACCESS_KEY_ID,
@@ -70,7 +70,7 @@ class AWSCleaner(object):
         if self.tag:
             print("About to delete S3 buckets tagged with %r." % ','.join(self.tag))
         else:
-            print("About to purge %r prefixed S3 buckets." % _DEPLOYMENT_PREFIX)
+            print("About to delete %r prefixed S3 buckets." % _DEPLOYMENT_PREFIX)
 
         for bucket in s3.buckets.all():
             match = False
@@ -86,16 +86,15 @@ class AWSCleaner(object):
                 match = True
 
             if match:
-                print("Deleting", bucket) if self.tag else print("Deleting objects from", bucket)
+                print("Deleting", bucket)
                 bucket.object_versions.delete()
                 bucket.objects.delete()
-                if self.tag:
-                    # All objects (including all object versions and Delete Markers) in the bucket
-                    # must be deleted before the bucket itself can be deleted.
-                    bucket.delete()
+                # All objects (including all object versions and Delete Markers) in the bucket
+                # must be deleted before the bucket itself can be deleted.
+                bucket.delete()
 
     def delete_dynamodb_tables(self):
-        """Purge/Delete DynamoDB tables.
+        """Delete DynamoDB tables.
 
         If tag was specified during object creating, then delete all tables tagged with this tag.
         Else delete all _DEPLOYMENT_PREFIX_ prefixed tables.
@@ -125,7 +124,6 @@ class AWSCleaner(object):
                 match = True
 
             if match:
-                # There's no 'purge' operation, so just delete the table in any case.
                 print("Deleting", table)
                 table.delete()
 
@@ -133,7 +131,7 @@ class AWSCleaner(object):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--force",
-                        help="Allow to purge/delete resources tagged/prefixed with prod or stage")
+                        help="Allow to delete resources tagged/prefixed with prod or stage")
     parser.add_argument("-t", "--tag",
                         help="Delete resources tagged with this 'key,value' tag")
     args = parser.parse_args()
@@ -152,7 +150,7 @@ if __name__ == '__main__':
             exit(1)
         print("About to delete resources tagged with %r" % ','.join(args.tag))
     else:
-        print("About to purge %r prefixed resources." % _DEPLOYMENT_PREFIX)
+        print("About to delete %r prefixed resources." % _DEPLOYMENT_PREFIX)
 
     if args.tag and args.tag[1].lower() in {'prod', 'stage'}:
         prod_stage = args.tag[1]
@@ -165,6 +163,6 @@ if __name__ == '__main__':
         exit(0)
 
     aws_cleaner = AWSCleaner(args.tag)
-    aws_cleaner.purge_sqs_queues()
-    aws_cleaner.purge_s3_buckets()
+    aws_cleaner.delete_sqs_queues()
+    aws_cleaner.delete_s3_buckets()
     aws_cleaner.delete_dynamodb_tables()
