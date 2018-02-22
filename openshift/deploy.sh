@@ -70,6 +70,7 @@ done
 
 oc_process_apply "${templates_dir}/pgbouncer.yaml"
 oc_process_apply "${templates_dir}/gremlin-docker.yaml" "-p CHANNELIZER=http -p REST_VALUE=1 -p IMAGE_TAG=latest"
+oc_process_apply "${templates_dir}/gremlin-docker.yaml" "-p CHANNELIZER=http -p REST_VALUE=1 -p IMAGE_TAG=latest -p QUERY_ADMINISTRATION_REGION=ingestion"
 oc_process_apply "${templates_dir}/data-model.yaml"
 oc_process_apply "${templates_dir}/worker.yaml" "-p WORKER_ADMINISTRATION_REGION=ingestion -p WORKER_EXCLUDE_QUEUES=GraphImporterTask"
 oc_process_apply "${templates_dir}/worker.yaml" "-p WORKER_ADMINISTRATION_REGION=ingestion -p WORKER_INCLUDE_QUEUES=GraphImporterTask -p WORKER_NAME_SUFFIX=-graph-import"
