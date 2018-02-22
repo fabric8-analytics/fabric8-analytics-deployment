@@ -164,6 +164,7 @@ services:
       # 0 - Bayesian runs inside RH
       # 1 - Bayesian runs in a cloud
       OPENSHIFT_DEPLOYMENT: 0
+      SENTRY_DSN: ''
       # Provide credentials here if you want to run on Amazon SQS instead of RabbitMQ, don't forget to supply
       # credentials even for server
       #AWS_SQS_ACCESS_KEY_ID: ''
