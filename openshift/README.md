@@ -25,6 +25,9 @@ To generate password you will require tool named `pwgen`.
 
 Use generated password to update RDS_PASSWORD value.
 
+## Configure Sentry DSN
+fabric8-analytics supports Sentry monitoring. In case you have DSN for your Sentry instance, simply replace `SENTRY_DSN` variable. 
+
 ### Run oc login
 
 dev cluster uses a self-signed certificate.

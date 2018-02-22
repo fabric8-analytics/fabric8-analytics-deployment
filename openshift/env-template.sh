@@ -49,4 +49,7 @@ export F8A_API_URL='not-set'
 export F8A_JOB_API_URL='not-set'
 export RECOMMENDER_API_TOKEN='not-set'
 
+#Sentry DSN
+export SENTRY_DSN=''
+
 export DEPLOYMENT_PREFIX=${DEPLOYMENT_PREFIX:-${OC_USERNAME}}
