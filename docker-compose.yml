@@ -86,6 +86,7 @@ services:
         pZ4sS5sLo10E0sSHNZb57o8MpGTPBHQPgKNNnHGlTn2MyzmLPZm8OCr+KuFtmCxO
         MwIDAQAB
         -----END PUBLIC KEY-----
+      SENTRY_DSN: ''
     ports:
      - "32000:5000"
   jobs:
