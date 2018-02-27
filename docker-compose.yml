@@ -137,6 +137,7 @@ services:
       # Both can be omitted, defaults to eu-west-1
       #AWS_SQS_REGION: ''
       #AWS_S3_REGION: ''
+      SENTRY_DSN: ''
   worker-api: &worker
     image: registry.devshift.net/bayesian/cucos-worker
     restart: always
