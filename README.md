@@ -15,7 +15,7 @@ Git, and possibly other packages, depending on how you want to run the system
 
 ### Getting the Code
 
-First of all, clone the `common` repo (this one). This includes all
+First of all, clone the `fabric8-analytics-deployment` repo (this one). This includes all
 the configuration for running the whole system as well as some helper
 scripts and docs.
 
@@ -70,7 +70,7 @@ $ sudo ./docker-compose.sh build --pull
 
 #### Secrets
 
-Some parts (GithubTask, BlackDuckTask) need credentials
+Some parts (GithubTask, LibrariesIoTask) need credentials
 for proper operation. You can provide environment variables in `worker_environment`
 in `docker-compose.yml`.
 
