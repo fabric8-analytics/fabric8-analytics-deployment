@@ -1,5 +1,4 @@
-FROM registry.centos.org/sclo/postgresql-94-centos7:latest
-MAINTAINER Fridolin Pokorny <fridolin@redhat.com>
+FROM registry.centos.org/centos/postgresql-94-centos7:latest
 
 ADD ./common.sh /usr/share/container-scripts/postgresql/common.sh
 
