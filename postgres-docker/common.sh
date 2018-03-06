@@ -126,6 +126,13 @@ function generate_postgresql_config() {
         < "${CONTAINER_SCRIPTS_PATH}/openshift-custom-postgresql-replication.conf.template" \
         >> "${POSTGRESQL_CONFIG_FILE}"
   fi
+
+  (
+  shopt -s nullglob
+  for conf in "${APP_DATA}"/src/postgresql-cfg/*.conf; do
+    echo include \'${conf}\' >> "${POSTGRESQL_CONFIG_FILE}"
+  done
+  )
 }
 
 function generate_postgresql_recovery_config() {
@@ -194,21 +201,6 @@ function create_users() {
   fi
 }
 
-function set_passwords() {
-  if [[ ",$postinitdb_actions," = *,simple_db,* ]]; then
-    psql --command "ALTER USER \"${POSTGRESQL_USER}\" WITH ENCRYPTED PASSWORD '${POSTGRESQL_PASSWORD}';"
-  fi
-
-  if [ -v POSTGRESQL_MASTER_USER ]; then
-    psql --command "ALTER USER \"${POSTGRESQL_MASTER_USER}\" WITH REPLICATION;"
-    psql --command "ALTER USER \"${POSTGRESQL_MASTER_USER}\" WITH ENCRYPTED PASSWORD '${POSTGRESQL_MASTER_PASSWORD}';"
-  fi
-
-  if [ -v POSTGRESQL_ADMIN_PASSWORD ]; then
-    psql --command "ALTER USER \"postgres\" WITH ENCRYPTED PASSWORD '${POSTGRESQL_ADMIN_PASSWORD}';"
-  fi
-}
-
 migrate_db ()
 {
     test "$postinitdb_actions" = ",migration" || return 0
@@ -228,19 +220,17 @@ migrate_db ()
 
 function set_pgdata ()
 {
+  export PGDATA=$HOME/data/userdata
+  # create a subdirectory that the user owns
+  mkdir -p "$PGDATA"
   # backwards compatibility case, we used to put the data here,
   # move it into our new expected location (userdata)
   if [ -e ${HOME}/data/PG_VERSION ]; then
-    mkdir -p "${HOME}/data/userdata"
     pushd "${HOME}/data"
     # move everything except the userdata directory itself, into the userdata directory.
     mv !(userdata) "userdata"
     popd
-  else 
-    # create a subdirectory that the user owns
-    mkdir -p "${HOME}/data/userdata"
   fi
-  export PGDATA=$HOME/data/userdata
   # ensure sane perms for postgresql startup
   chmod 700 "$PGDATA"
 }
@@ -418,4 +408,33 @@ try_pgupgrade ()
   fi
 
   run_pgupgrade
+}
+
+# get_matched_files finds file for image extending
+function get_matched_files() {
+  local custom_dir default_dir
+  custom_dir="$1"
+  default_dir="$2"
+  files_matched="$3"
+  find "$default_dir" -maxdepth 1 -type f -name "$files_matched" -printf "%f\n"
+  [ -d "$custom_dir" ] && find "$custom_dir" -maxdepth 1 -type f -name "$files_matched" -printf "%f\n"
+}
+
+# process_extending_files process extending files in $1 and $2 directories
+# - source all *.sh files
+#   (if there are files with same name source only file from $1)
+function process_extending_files() {
+  local custom_dir default_dir
+  custom_dir=$1
+  default_dir=$2
+
+  while read filename ; do
+    echo "=> sourcing $filename ..."
+    # Custom file is prefered
+    if [ -f $custom_dir/$filename ]; then
+      source $custom_dir/$filename
+    elif [ -f $default_dir/$filename ]; then
+      source $default_dir/$filename
+    fi
+  done <<<"$(get_matched_files "$custom_dir" "$default_dir" '*.sh' | sort -u)"
 }
