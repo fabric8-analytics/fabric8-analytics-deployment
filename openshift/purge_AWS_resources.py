@@ -136,8 +136,8 @@ if __name__ == '__main__':
                         help="Delete resources tagged with this 'key,value' tag")
     args = parser.parse_args()
 
-    if not all(_AWS_ACCESS_KEY_ID and _AWS_SECRET_ACCESS_KEY and _AWS_DEFAULT_REGION and
-               _DEPLOYMENT_PREFIX):
+    if not all((_AWS_ACCESS_KEY_ID, _AWS_SECRET_ACCESS_KEY, _AWS_DEFAULT_REGION,
+                _DEPLOYMENT_PREFIX)):
         print("Not all environment variables are properly defined.", file=stderr)
         exit(1)
 
