@@ -26,7 +26,7 @@ services:
   pgbouncer:
     image: registry.devshift.net/bayesian/coreapi-pgbouncer
     container_name: coreapi-pgbouncer
-    links:
+    depends_on:
      - postgres
     ports:
      - "5432:5432"
@@ -37,7 +37,7 @@ services:
       POSTGRESQL_INITIAL_DATABASE: postgres
   server:
     image: registry.devshift.net/bayesian/bayesian-api
-    links:
+    depends_on:
      - broker
      - pgbouncer
      - gremlin-http
@@ -92,9 +92,7 @@ services:
      - worker-ingestion
      - worker-priority
      - pgbouncer
-    links:
      - broker
-     - pgbouncer
      - minio-s3
      - gremlin-http
      - data-model-importer
@@ -135,7 +133,6 @@ services:
     restart: always
     depends_on:
      - worker-db-migrations
-    links:
      - broker
      - pgbouncer
      - minio-s3
@@ -206,7 +203,7 @@ services:
     image: registry.devshift.net/bayesian/cucos-worker
     restart: on-failure
     container_name: coreapi-worker-db-migrations
-    links:
+    depends_on:
      - pgbouncer
     command: /alembic/run-db-migrations.sh
     environment:
@@ -252,7 +249,7 @@ services:
       - dynamodb
     mem_limit: 2G
     container_name: bayesian-gremlin-http
-    links:
+    depends_on:
       - dynamodb
 
   data-model-importer:
@@ -287,7 +284,7 @@ services:
       BAYESIAN_PGBOUNCER_SERVICE_PORT: 5432
     ports:
       - "9192:9192"
-    links:
+    depends_on:
       - gremlin-http
       - minio-s3
       - pgbouncer
@@ -303,5 +300,5 @@ services:
       AWS_SECRET_ACCESS_KEY: "ZmvMwngonaDK5ymlCd6ptaalDdJsCn3aSSxASPaZ"
       DEPLOYMENT_PREFIX: "${USER}"
       S3_ENDPOINT_URL: "http://coreapi-s3:33000"
-    links:
+    depends_on:
       - minio-s3
