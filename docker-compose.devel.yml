@@ -1,10 +1,6 @@
 # NOTE: Containers use the generic "coreapi" prefix so they're independent of
 #       the particular project name. Project specific images are always built
 #       locally when using the docker-compose file.
-#
-#   The services are all configured with "network_mode: bridge" to work around
-#   name lookup problems with docker, docker-compose and the use of a local DNS
-#   resolver on the host: https://bugzilla.redhat.com/show_bug.cgi?id=1258350
 version: "2"
 services:
   pgbouncer:

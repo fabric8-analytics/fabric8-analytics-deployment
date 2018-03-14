@@ -1,10 +1,6 @@
 # NOTE: Containers use the generic "coreapi" prefix so they're independent of
 #       the particular project name. Project specific images are always built
 #       locally when using the docker-compose file.
-#
-#   The services are all configured with "network_mode: bridge" to work around
-#   name lookup problems with docker, docker-compose and the use of a local DNS
-#   resolver on the host: https://bugzilla.redhat.com/show_bug.cgi?id=1258350
 version: "2"
 services:
   broker:
@@ -12,7 +8,6 @@ services:
     # for kubernetes in orchestration/restart-coreapi.sh
     image: registry.centos.org/centos/rabbitmq
     container_name: coreapi-broker
-    network_mode: bridge
     ports:
      - "5672:5672"
      - "15672:15672"
@@ -21,7 +16,6 @@ services:
       RABBITMQ_PASS: guest
   postgres:
     image: registry.devshift.net/bayesian/coreapi-postgres
-    network_mode: bridge
     ports:
      - "6432:5432"
     environment:
@@ -32,8 +26,7 @@ services:
   pgbouncer:
     image: registry.devshift.net/bayesian/coreapi-pgbouncer
     container_name: coreapi-pgbouncer
-    network_mode: bridge
-    links:
+    depends_on:
      - postgres
     ports:
      - "5432:5432"
@@ -44,8 +37,7 @@ services:
       POSTGRESQL_INITIAL_DATABASE: postgres
   server:
     image: registry.devshift.net/bayesian/bayesian-api
-    network_mode: bridge
-    links:
+    depends_on:
      - broker
      - pgbouncer
      - gremlin-http
@@ -90,7 +82,6 @@ services:
      - "32000:5000"
   jobs:
     image: registry.devshift.net/bayesian/coreapi-jobs
-    network_mode: bridge
     container_name: coreapi-jobs
     restart: always
     ports:
@@ -101,9 +92,7 @@ services:
      - worker-ingestion
      - worker-priority
      - pgbouncer
-    links:
      - broker
-     - pgbouncer
      - minio-s3
      - gremlin-http
      - data-model-importer
@@ -142,10 +131,8 @@ services:
   worker-api: &worker
     image: registry.devshift.net/bayesian/cucos-worker
     restart: always
-    network_mode: bridge
     depends_on:
      - worker-db-migrations
-    links:
      - broker
      - pgbouncer
      - minio-s3
@@ -216,8 +203,7 @@ services:
     image: registry.devshift.net/bayesian/cucos-worker
     restart: on-failure
     container_name: coreapi-worker-db-migrations
-    network_mode: bridge
-    links:
+    depends_on:
      - pgbouncer
     command: /alembic/run-db-migrations.sh
     environment:
@@ -237,7 +223,6 @@ services:
         - ":33000"
         - /export
     container_name: coreapi-s3
-    network_mode: bridge
     ports:
       - "33000:33000"
     environment:
@@ -246,7 +231,6 @@ services:
 
   dynamodb:
     image: hilverd/dynamodb
-    network_mode: bridge
     ports:
       - "8000:8000"
       - "4567:4567"
@@ -255,7 +239,6 @@ services:
 
   gremlin-http:
     image: registry.devshift.net/bayesian/gremlin
-    network_mode: bridge
     entrypoint: /bin/entrypoint-local.sh
     environment:
       - REST=1
@@ -266,13 +249,12 @@ services:
       - dynamodb
     mem_limit: 2G
     container_name: bayesian-gremlin-http
-    links:
+    depends_on:
       - dynamodb
 
   data-model-importer:
     image: registry.devshift.net/bayesian/data-model-importer
     restart: always
-    network_mode: bridge
     entrypoint:
       - /bin/entrypoint.sh
     # volumes:
@@ -302,7 +284,7 @@ services:
       BAYESIAN_PGBOUNCER_SERVICE_PORT: 5432
     ports:
       - "9192:9192"
-    links:
+    depends_on:
       - gremlin-http
       - minio-s3
       - pgbouncer
@@ -312,12 +294,11 @@ services:
     # https://github.com/fabric8-analytics/cvedb-s3-dump-docker
     image: registry.devshift.net/bayesian/cvedb-s3-dump
     restart: on-failure
-    network_mode: bridge
     environment:
       F8A_UNCLOUDED_MODE: 'true'
       AWS_ACCESS_KEY_ID: "GNV3SAHAHA3DOT99GQII"
       AWS_SECRET_ACCESS_KEY: "ZmvMwngonaDK5ymlCd6ptaalDdJsCn3aSSxASPaZ"
       DEPLOYMENT_PREFIX: "${USER}"
       S3_ENDPOINT_URL: "http://coreapi-s3:33000"
-    links:
+    depends_on:
       - minio-s3

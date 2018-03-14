@@ -6,10 +6,9 @@ services:
       dockerfile: Dockerfile.flower
     image: registry.devshift.net/bayesian/coreapi-flower
     container_name: coreapi-flower
-    network_mode: bridge
     ports:
      - "31000:5555"
-    links:
+    depends_on:
      - broker
     environment:
       RABBITMQ_SERVICE_SERVICE_HOST: broker
@@ -18,10 +17,9 @@ services:
       context: .
       dockerfile: Dockerfile.pgweb
     image: registry.devshift.net/bayesian/coreapi-pgweb:latest
-    network_mode: bridge
     ports:
      - "31003:8080"
-    links:
+    depends_on:
      - pgbouncer
     environment:
       DATABASE_URL: "postgres://coreapi:coreapi@coreapi-pgbouncer:5432/coreapi?sslmode=disable"
