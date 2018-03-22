@@ -83,6 +83,7 @@ oc_process_apply "${templates_dir}/scaler.yaml" "-p DC_NAME=bayesian-worker-inge
 oc_process_apply "${templates_dir}/scaler.yaml" "-p DC_NAME=bayesian-worker-api -p SQS_QUEUE_NAME=api_bayesianFlow_v0 -p MAX_REPLICAS=4 -p DEFAULT_REPLICAS=2"
 oc_process_apply "${templates_dir}/firehose-fetcher.yaml"
 oc_process_apply "${templates_dir}/stack-analysis.yaml" "-p KRONOS_SCORING_REGION=maven"
-oc_process_apply "${templates_dir}/stack-analysis.yaml" "-p KRONOS_SCORING_REGION=pypi"
+# kronos-pypi is not used/maintained now
+# oc_process_apply "${templates_dir}/stack-analysis.yaml" "-p KRONOS_SCORING_REGION=pypi"
 oc_process_apply "${templates_dir}/license-analysis.yaml"
 oc_process_apply "${templates_dir}/stack-report-ui.yaml"
