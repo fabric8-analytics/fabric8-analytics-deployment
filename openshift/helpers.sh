@@ -36,9 +36,9 @@ function deploy_secrets() {
     -p GITHUB_OAUTH_CONSUMER_SECRET="$(/bin/echo -n "${GITHUB_OAUTH_CONSUMER_SECRET}" | base64)" \
     -p LIBRARIES_IO_TOKEN="$(/bin/echo -n "${LIBRARIES_IO_TOKEN}" | base64)" \
     -p FLASK_APP_SECRET_KEY="$(/bin/echo -n "${FLASK_APP_SECRET_KEY}" | base64)" \
-    -p RDS_ENDPOINT="$(/bin/echo "${RDS_ENDPOINT}" | base64)" \
-    -p RDS_PASSWORD="$(/bin/echo "${RDS_PASSWORD}" | base64)" \
-    -p RDS_DBNAME="$(/bin/echo "${RDS_DBNAME}" | base64)" \
+    -p RDS_ENDPOINT="$(/bin/echo -n "${RDS_ENDPOINT}" | base64)" \
+    -p RDS_PASSWORD="$(/bin/echo -n "${RDS_PASSWORD}" | base64)" \
+    -p RDS_DBNAME="$(/bin/echo -n "${RDS_DBNAME}" | base64)" \
     -f "${here}/secrets-template.yaml" > "${here}/secrets.yaml"
     oc apply -f secrets.yaml
 }
