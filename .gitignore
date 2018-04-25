@@ -4,6 +4,7 @@ fabric8-analytics-pgbouncer/
 fabric8-analytics-server/
 fabric8-analytics-worker/
 
+openshift/buildroot/
 # ---> Python
 
 # Ignore testing artifacts
