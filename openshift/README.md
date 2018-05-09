@@ -58,6 +58,8 @@ to remove the OpenShift project and all allocated AWS resources.
 
 ## Test not-yet-merged changes
 
+### Build in CI
+
 Assume you have opened a PR in one of the [fabric8-analytics repositories](https://github.com/fabric8-analytics/).
 Once tests are green, [CentosCI](https://ci.centos.org/) will build your image and comment on the PR:
 
@@ -68,6 +70,16 @@ To update your dev deployment to use the above mentioned image you can use one t
 - [oc edit](https://docs.openshift.com/container-platform/3.4/cli_reference/basic_cli_operations.html#edit) from command line
 - editor in web interface: `Applications` -> `Deployments` -> select deployment -> `Actions` -> `Edit YAML`
 - edit [deploy.sh](deploy.sh), add `"-p IMAGE_TAG=SNAPSHOT-PR-25"` (with correct tag) to corresponding `oc_process_apply` call at the end of the file and (re-)run `./deploy.sh`.
+
+### Build in OpenShift
+
+Update configure_os_builds.sh remotes value should contain your github accout name.
+Loval variable templates define all the repositories that will be cloned and build using [openshift docker build](https://docs.openshift.org/latest/dev_guide/builds/build_inputs.html#dockerfile-source).
+
+
+#### Update deployments to use imagestreams
+
+After sucessfull build of all required images user needs to update all deployments to use newly build [streams](https://docs.openshift.org/latest/architecture/core_concepts/builds_and_image_streams.html#image-streams)
 
 
 # E2E test
