@@ -74,7 +74,7 @@ To update your dev deployment to use the above mentioned image you can use one t
 ### Build in OpenShift
 
 Update configure_os_builds.sh remotes value should contain your github accout name.
-Loval variable templates define all the repositories that will be cloned and build using [openshift docker build](https://docs.openshift.org/latest/dev_guide/builds/build_inputs.html#dockerfile-source).
+Local variable templates define all the repositories that will be cloned and build using [openshift docker build](https://docs.openshift.org/latest/dev_guide/builds/build_inputs.html#dockerfile-source).
 
 
 #### Update deployments to use imagestreams
