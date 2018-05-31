@@ -7,7 +7,7 @@ fabric8-analytics-scaler fabric8-analytics-firehose-fetcher
 fabric8-analytics-license-analysis fabric8-analytics-stack-analysis
 f8a-server-backbone fabric8-analytics-stack-report-ui fabric8-analytics-api-gateway"
 
-remotes="humaton"
+remotes="fork"
 mkdir -p buildroot
 cd buildroot
 
