@@ -40,7 +40,7 @@ templates="fabric8-analytics-jobs fabric8-analytics-server fabric8-analytics-dat
 fabric8-analytics-worker fabric8-analytics-pgbouncer gremlin-docker
 fabric8-analytics-scaler fabric8-analytics-firehose-fetcher
 fabric8-analytics-license-analysis fabric8-analytics-stack-analysis
-f8a-server-backbone fabric8-analytics-stack-report-ui"
+f8a-server-backbone fabric8-analytics-stack-report-ui fabric8-analytics-api-gateway"
 
 purge_aws_resources=false # default
 for key in "$@"; do
@@ -87,3 +87,4 @@ oc_process_apply "${templates_dir}/stack-analysis.yaml" "-p KRONOS_SCORING_REGIO
 # oc_process_apply "${templates_dir}/stack-analysis.yaml" "-p KRONOS_SCORING_REGION=pypi"
 oc_process_apply "${templates_dir}/license-analysis.yaml"
 oc_process_apply "${templates_dir}/stack-report-ui.yaml"
+oc_process_apply "${templates_dir}/api-gateway.yaml"
