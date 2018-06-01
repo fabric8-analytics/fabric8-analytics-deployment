@@ -99,6 +99,6 @@ oc_process_apply "${templates_dir}/stack-analysis.yaml" "-p KRONOS_SCORING_REGIO
 sleep 20
 oc_process_apply "${templates_dir}/license-analysis.yaml"
 sleep 20
-oc_process_apply "${templates_dir}/stack-report-ui.yaml"
+oc_process_apply "${templates_dir}/stack-report-ui.yaml" "-p REPLICAS=1"
 sleep 20
 oc_process_apply "${templates_dir}/api-gateway.yaml"
