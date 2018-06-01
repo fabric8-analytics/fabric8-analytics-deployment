@@ -38,7 +38,7 @@ is_set_or_fail AWS_SECRET_ACCESS_KEY "${AWS_SECRET_ACCESS_KEY}"
 templates_dir="${here}/templates"
 templates="fabric8-analytics-jobs fabric8-analytics-server fabric8-analytics-data-model
 fabric8-analytics-worker fabric8-analytics-pgbouncer gremlin-docker
-fabric8-analytics-scaler fabric8-analytics-firehose-fetcher
+fabric8-analytics-firehose-fetcher
 fabric8-analytics-license-analysis fabric8-analytics-stack-analysis
 f8a-server-backbone fabric8-analytics-stack-report-ui fabric8-analytics-api-gateway"
 
@@ -79,8 +79,6 @@ oc_process_apply "${templates_dir}/worker.yaml" "-p WORKER_ADMINISTRATION_REGION
 oc_process_apply "${templates_dir}/worker.yaml" "-p WORKER_ADMINISTRATION_REGION=api -p WORKER_INCLUDE_QUEUES=GraphImporterTask -p WORKER_NAME_SUFFIX=-graph-import"
 oc_process_apply "${templates_dir}/f8a-server-backbone.yaml"
 oc_process_apply "${templates_dir}/server.yaml"
-oc_process_apply "${templates_dir}/scaler.yaml" "-p DC_NAME=bayesian-worker-ingestion -p SQS_QUEUE_NAME=ingestion_bayesianFlow_v0 -p MAX_REPLICAS=8 -p DEFAULT_REPLICAS=2"
-oc_process_apply "${templates_dir}/scaler.yaml" "-p DC_NAME=bayesian-worker-api -p SQS_QUEUE_NAME=api_bayesianFlow_v0 -p MAX_REPLICAS=4 -p DEFAULT_REPLICAS=2"
 oc_process_apply "${templates_dir}/firehose-fetcher.yaml"
 oc_process_apply "${templates_dir}/stack-analysis.yaml" "-p KRONOS_SCORING_REGION=maven"
 # kronos-pypi is not used/maintained now
