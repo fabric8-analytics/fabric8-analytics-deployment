@@ -15,6 +15,7 @@ objects:
     dynamodb-prefix: "${DEPLOYMENT_PREFIX}"
     keycloak-url: "${KEYCLOAK_URL}"
     three-scale-api-host-url: "${THREE_SCALE_API_HOST_URL}"
+    auth-url: "${AUTH_URL}"
 
 parameters:
 - description: Deployment prefix used for deployment-specific AWS resources
@@ -52,3 +53,10 @@ parameters:
   required: false
   name: THREE_SCALE_API_HOST_URL
   value: ""
+
+- description: Auth URL
+  displayName: Auth URL
+  required: true
+  name: AUTH_URL
+  value: "https://auth.prod-preview.openshift.io"
+
