@@ -69,20 +69,36 @@ do
 done
 
 oc_process_apply "${templates_dir}/pgbouncer.yaml"
+sleep 20
 oc_process_apply "${templates_dir}/gremlin-docker.yaml" "-p CHANNELIZER=http -p REST_VALUE=1 -p IMAGE_TAG=latest"
+sleep 20
 oc_process_apply "${templates_dir}/gremlin-docker.yaml" "-p CHANNELIZER=http -p REST_VALUE=1 -p IMAGE_TAG=latest -p QUERY_ADMINISTRATION_REGION=ingestion"
+sleep 20
 oc_process_apply "${templates_dir}/data-model.yaml"
+sleep 20
 oc_process_apply "${templates_dir}/jobs.yaml"
+sleep 20
 oc_process_apply "${templates_dir}/worker.yaml" "-p WORKER_ADMINISTRATION_REGION=ingestion -p WORKER_EXCLUDE_QUEUES=GraphImporterTask"
+sleep 20
 oc_process_apply "${templates_dir}/worker.yaml" "-p WORKER_ADMINISTRATION_REGION=ingestion -p WORKER_INCLUDE_QUEUES=GraphImporterTask -p WORKER_NAME_SUFFIX=-graph-import"
+sleep 20
 oc_process_apply "${templates_dir}/worker.yaml" "-p WORKER_ADMINISTRATION_REGION=api -p WORKER_RUN_DB_MIGRATIONS=1 -p WORKER_EXCLUDE_QUEUES=GraphImporterTask"
+sleep 20
 oc_process_apply "${templates_dir}/worker.yaml" "-p WORKER_ADMINISTRATION_REGION=api -p WORKER_INCLUDE_QUEUES=GraphImporterTask -p WORKER_NAME_SUFFIX=-graph-import"
+sleep 20
 oc_process_apply "${templates_dir}/f8a-server-backbone.yaml"
+sleep 20
 oc_process_apply "${templates_dir}/server.yaml"
+sleep 20
 oc_process_apply "${templates_dir}/firehose-fetcher.yaml"
+sleep 20
 oc_process_apply "${templates_dir}/stack-analysis.yaml" "-p KRONOS_SCORING_REGION=maven"
 # kronos-pypi is not used/maintained now
+# sleep 20
 # oc_process_apply "${templates_dir}/stack-analysis.yaml" "-p KRONOS_SCORING_REGION=pypi"
+sleep 20
 oc_process_apply "${templates_dir}/license-analysis.yaml"
-oc_process_apply "${templates_dir}/stack-report-ui.yaml"
+sleep 20
+oc_process_apply "${templates_dir}/stack-report-ui.yaml" "-p REPLICAS=1"
+sleep 20
 oc_process_apply "${templates_dir}/api-gateway.yaml"
