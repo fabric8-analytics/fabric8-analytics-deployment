@@ -22,15 +22,6 @@ $ cp env-template.sh env.sh
 $ vim env.sh
 ```
 
-## Run oc login once
-
-dev cluster uses a self-signed certificate.
-We need to log in using the command line and accept the certificate.
-
-```shell
-$ oc login $OC_URI -u $OC_USERNAME -p $OC_PASSWD
-```
-
 ## Deploy fabric8-analytics services
 
 Just run the deploy script and enjoy!
