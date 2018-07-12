@@ -8,6 +8,9 @@
 export OC_USERNAME='not-set'
 # Your dev cluster password
 export OC_PASSWD='not-set'
+# Export dev cluster token
+export OC_TOKEN='not-set'
+
 
 # (Required) AWS credentials
 export AWS_ACCESS_KEY_ID='not-set'

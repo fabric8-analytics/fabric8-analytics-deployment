@@ -49,7 +49,7 @@ function oc_process_apply() {
 }
 
 function openshift_login() {
-    oc login "${OC_URI}" -u "${OC_USERNAME}" -p "${OC_PASSWD}" --insecure-skip-tls-verify=true
+    oc login "${OC_URI}" --token="${OC_TOKEN}" --insecure-skip-tls-verify=true
 }
 
 function purge_aws_resources() {

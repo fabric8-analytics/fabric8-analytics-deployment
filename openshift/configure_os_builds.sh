@@ -1,5 +1,10 @@
+#!/usr/bin/env bash
+# This script creates directory buildroot with checkout of following projects
+
 source helpers.sh
 source env.sh
+
+GITHUB_USERNAME="fabric8-analytics"
 
 templates="fabric8-analytics-jobs fabric8-analytics-server fabric8-analytics-data-model
 fabric8-analytics-worker fabric8-analytics-pgbouncer gremlin-docker
@@ -7,33 +12,12 @@ fabric8-analytics-scaler fabric8-analytics-firehose-fetcher
 fabric8-analytics-license-analysis fabric8-analytics-stack-analysis
 f8a-server-backbone fabric8-analytics-stack-report-ui fabric8-analytics-api-gateway"
 
-remotes="fork"
-mkdir -p buildroot
-cd buildroot
+openshift_login
+oc create secret generic github --from-file=.gitconfig
 
 for repo in $templates
 do
-  fullrepo=${repo}
-  if ! `ls $fullrepo &>/dev/null`; then
-    git clone "git@github.com:fabric8-analytics/${fullrepo}.git"
-  fi
-
-  if [[ -n "$remotes" ]]; then
-    pushd $fullrepo &>/dev/null
-    if ! `git remote show | grep "^fork$" &>/dev/null`; then
-      git remote add fork "git@github.com:${remotes}/${fullrepo}.git"
-      git fetch --all
-    fi
-    popd &>/dev/null
-  fi
-done
-
-openshift_login
-
-for template in ${templates}
-do
-    cd ${repo}
-    oc new-build https://github.com/fabric8-analytics/${template} --strategy=docker
-    oc start-build ${template}  --from-dir=./
-    cd ..
+  oc new-build "https://github.com/${GITHUB_USERNAME}/${repo}.git" --strategy=docker
+  oc set build-secret --source "bc/${repo}" github
+  oc start-build "$repo"
 done

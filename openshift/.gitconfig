@@ -1,0 +1,5 @@
+[user]
+	name = Analytics Deployer
+	email = random@redhat.com
+[http]
+	sslVerify=false
