@@ -1,17 +1,5 @@
 version: "2"
 services:
-  flower:
-    build:
-      context: .
-      dockerfile: Dockerfile.flower
-    image: registry.devshift.net/bayesian/coreapi-flower
-    container_name: coreapi-flower
-    ports:
-     - "31000:5555"
-    depends_on:
-     - broker
-    environment:
-      RABBITMQ_SERVICE_SERVICE_HOST: broker
   pgweb:
     build:
       context: .

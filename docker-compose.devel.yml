@@ -1,6 +1,3 @@
-# NOTE: Containers use the generic "coreapi" prefix so they're independent of
-#       the particular project name. Project specific images are always built
-#       locally when using the docker-compose file.
 version: "2"
 services:
   pgbouncer:

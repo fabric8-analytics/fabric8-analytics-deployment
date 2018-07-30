@@ -1,11 +1,6 @@
-# NOTE: Containers use the generic "coreapi" prefix so they're independent of
-#       the particular project name. Project specific images are always built
-#       locally when using the docker-compose file.
 version: "2"
 services:
   broker:
-    # if you're updating tag, don't forget to also update configuration
-    # for kubernetes in orchestration/restart-coreapi.sh
     image: registry.centos.org/centos/rabbitmq
     container_name: coreapi-broker
     ports:
@@ -24,7 +19,7 @@ services:
       POSTGRESQL_DATABASE: "coreapi"
     container_name: coreapi-postgres
   pgbouncer:
-    image: registry.devshift.net/bayesian/coreapi-pgbouncer
+    image: quay.io/openshiftio/bayesian-coreapi-pgbouncer
     container_name: coreapi-pgbouncer
     depends_on:
      - postgres
@@ -36,7 +31,7 @@ services:
       POSTGRESQL_DATABASE: coreapi
       POSTGRESQL_INITIAL_DATABASE: postgres
   server:
-    image: registry.devshift.net/bayesian/bayesian-api
+    image: quay.io/openshiftio/bayesian-bayesian-api
     depends_on:
      - broker
      - pgbouncer
@@ -81,7 +76,7 @@ services:
     ports:
      - "32000:5000"
   jobs:
-    image: registry.devshift.net/bayesian/coreapi-jobs
+    image: quay.io/openshiftio/bayesian-coreapi-jobs
     container_name: coreapi-jobs
     restart: always
     ports:
@@ -129,7 +124,7 @@ services:
       #AWS_S3_REGION: ''
       SENTRY_DSN: ''
   worker-api: &worker
-    image: registry.devshift.net/bayesian/cucos-worker
+    image: quay.io/openshiftio/bayesian-cucos-worker
     restart: always
     depends_on:
      - worker-db-migrations
@@ -230,7 +225,7 @@ services:
       MINIO_SECRET_KEY: ZmvMwngonaDK5ymlCd6ptaalDdJsCn3aSSxASPaZ
 
   dynamodb:
-    image: hilverd/dynamodb
+    image: cnadiminti/dynamodb-local
     ports:
       - "8000:8000"
       - "4567:4567"
@@ -238,7 +233,7 @@ services:
     container_name: dynamodb
 
   gremlin-http:
-    image: registry.devshift.net/bayesian/gremlin
+    image: quay.io/openshiftio/bayesian-gremlin
     entrypoint: /bin/entrypoint-local.sh
     environment:
       - REST=1
@@ -253,7 +248,7 @@ services:
       - dynamodb
 
   data-model-importer:
-    image: registry.devshift.net/bayesian/data-model-importer
+    image: quay.io/openshiftio/bayesian-data-model-importer
     restart: always
     entrypoint:
       - /bin/entrypoint.sh
