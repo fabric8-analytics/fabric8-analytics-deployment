@@ -1,17 +1,14 @@
 version: "2"
 services:
   flower:
-    build:
-      context: .
-      dockerfile: Dockerfile.flower
-    image: registry.devshift.net/bayesian/coreapi-flower
+    image: mher/flower
     container_name: coreapi-flower
     ports:
      - "31000:5555"
     depends_on:
      - broker
     environment:
-      RABBITMQ_SERVICE_SERVICE_HOST: broker
+      CELERY_BROKER_URL: amqp://guest:guest@broker:5672//
   pgweb:
     build:
       context: .
