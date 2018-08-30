@@ -281,6 +281,23 @@ services:
       - minio-s3
       - pgbouncer
 
+  data-model-schema:
+    # populate graph schema and quit
+    image: quay.io/openshiftio/bayesian-data-model-importer
+    restart: on-failure
+    entrypoint:
+      - /populate_schema.py
+    environment:
+      # controls whether to use http or https
+      GREMLIN_USE_SECURE_CONNECTION: "false"
+      BAYESIAN_GREMLIN_HTTP_SERVICE_HOST: "bayesian-gremlin-http"
+      BAYESIAN_GREMLIN_HTTP_SERVICE_PORT: "8182"
+      BAYESIAN_GREMLIN_HTTPINGESTION_SERVICE_HOST: "bayesian-gremlin-http"
+      BAYESIAN_GREMLIN_HTTPINGESTION_SERVICE_PORT: "8182"
+      DEPLOYMENT_PREFIX: "${USER}"
+    depends_on:
+      - gremlin-http
+
   cvedb-s3-dump:
     # this service just copies pre-built CVE DB to S3 and exits
     # https://github.com/fabric8-analytics/cvedb-s3-dump-docker
