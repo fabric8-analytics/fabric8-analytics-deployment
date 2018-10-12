@@ -297,17 +297,3 @@ services:
       DEPLOYMENT_PREFIX: "${USER}"
     depends_on:
       - gremlin-http
-
-  cvedb-s3-dump:
-    # this service just copies pre-built CVE DB to S3 and exits
-    # https://github.com/fabric8-analytics/cvedb-s3-dump-docker
-    image: registry.devshift.net/bayesian/cvedb-s3-dump
-    restart: on-failure
-    environment:
-      F8A_UNCLOUDED_MODE: 'true'
-      AWS_ACCESS_KEY_ID: "GNV3SAHAHA3DOT99GQII"
-      AWS_SECRET_ACCESS_KEY: "ZmvMwngonaDK5ymlCd6ptaalDdJsCn3aSSxASPaZ"
-      DEPLOYMENT_PREFIX: "${USER}"
-      S3_ENDPOINT_URL: "http://coreapi-s3:33000"
-    depends_on:
-      - minio-s3
