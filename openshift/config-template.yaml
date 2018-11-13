@@ -16,6 +16,7 @@ objects:
     keycloak-url: "${KEYCLOAK_URL}"
     three-scale-api-host-url: "${THREE_SCALE_API_HOST_URL}"
     auth-url: "${AUTH_URL}"
+    notification-url: "${NOTIFICATION_URL}"
 
 parameters:
 - description: Deployment prefix used for deployment-specific AWS resources
@@ -59,4 +60,10 @@ parameters:
   required: true
   name: AUTH_URL
   value: "https://auth.prod-preview.openshift.io"
+
+- description: Notification URL
+  displayName: Notification URL
+  required: false
+  name: NOTIFICATION_URL
+  value: ""
 
