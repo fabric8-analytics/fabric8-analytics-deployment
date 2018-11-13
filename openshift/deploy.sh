@@ -91,8 +91,6 @@ oc_process_apply "${templates_dir}/f8a-server-backbone.yaml"
 sleep 20
 oc_process_apply "${templates_dir}/server.yaml"
 sleep 20
-oc_process_apply "${templates_dir}/firehose-fetcher.yaml"
-sleep 20
 oc_process_apply "${templates_dir}/stack-analysis.yaml" "-p KRONOS_SCORING_REGION=maven"
 # kronos-pypi is not used/maintained now
 # sleep 20
