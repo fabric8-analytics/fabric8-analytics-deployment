@@ -12,6 +12,14 @@ $ sudo dnf install awscli pwgen postgresql origin-clients
 
 Mac users will also need to install gawk from brew.
 
+If you are running Mac, then following commands will do the trick:
+
+```shell
+$ brew install awscli
+$ brew install postgres
+$ brew install openshift-cli
+$ brew install pwgen
+```
 ## Configure fabric8-analytics services
 
 The deploy.sh script expects to find configuration in `env.sh` file.
