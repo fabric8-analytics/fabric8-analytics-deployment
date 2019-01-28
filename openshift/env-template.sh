@@ -57,7 +57,7 @@ export KEYCLOAK_URL='https://sso.openshift.io'
 export FLASK_APP_SECRET_KEY='notsosecret'
 
 # Dev cluster
-export OC_URI='dev.rdu2c.fabric8.io:8443'
+export OC_URI='devtools-dev.ext.devshift.net:8443'
 export OC_PROJECT="${OC_USERNAME}-fabric8-analytics"
 
 # AWS
