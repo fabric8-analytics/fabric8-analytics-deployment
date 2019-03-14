@@ -32,15 +32,18 @@ checked out. The helper script `setup.sh` is here to do that. Run `setup.sh -h`
 and follow the instructions (most of the time, you'll be fine with running
 `setup.sh` with no arguments).
 
+### Running in OpenShift
+
+This is not exactly a local development experience, but if you'd like to test your changes
+in OpenShift, there is some [documentation](openshift/README.md) on how to do it.
+
+
 ### Running via docker-compose
 
 Requirements:
 
-* docker >= 1.10.0
-* docker-compose >= 1.6.0
-
-Fedora 24, 25 and 26 have docker-compose > 1.6 and docker > 1.10.0. You should be
-able to run on Fedora 24/25/26 without any workarounds.
+* docker
+* docker-compose
 
 Then run:
 
@@ -95,23 +98,17 @@ This will run additional 2 workers, giving you a total of 4 workers running.
 You can use this command repeatedly with different numbers to scale up and
 down as necessary.
 
-### Running in OpenShift
-
-For running in openshift refer to [README in openshift directory](./openshift/README.md)
-
 ### Accessing Services, Logs and Other Interesting Stuff
 
 #### Services
 
 When the whole application is started, there are several services you can
 access. When running through docker-compose, all of these services will be
-bound to `localhost`. When running with OpenShift, TODO
+bound to `localhost`.
 
-1. fabric8-analytics Server itself (see server-service.yaml) - port `32000`
+1. fabric8-analytics Server itself - port `32000`
 2. fabric8-analytics Jobs API - port `34000`
-3. Celery Flower (task queue monitor, see flower-service.yaml) - port `31000`
-   Celery Flower is only run if you run with `-f docker-compose.debug.yml`
-4. PGWeb (web UI for database, see pgweb-service.yaml) - port `31003`
+4. PGWeb (web UI for database) - port `31003`
    PGWeb is only run if you run with `-f docker-compose.debug.yml`
 5. Minio S3 - port `33000`
 
@@ -177,18 +174,16 @@ using RabbitMQ instead of Amazon's SQS.
 
 ### Using local DynamoDB instead of the hosted one
 
-The local setup is already prepared to work with local DynamoDB. This is handled
-in [data-model](https://github.com/fabric8-analytics/fabric8-analytics-data-model)
-repository.
+The local setup is already prepared to work with local DynamoDB.
 
 ### Using Minio S3 instead of Amazon S3
 
 To substitute Amazon S3 in local deployment and development setup, there
 was chosen [Minio S3](https://github.com/minio/minio) as an alternative. However
-Minio S3 is not fully compatible alternative (e.g. it does not support versioning
+Minio S3 is not fully compatible alternative (e.g. it does not support versioning,
 nor encryption), but it does not restrict basic functionality whatsoever.
 
-You can find credentials to the Minio S3 web console in `docker-compose` file
+You can find credentials to the Minio S3 web console in `docker-compose.yml` file
 (search for `MINIO_ACCESS_KEY` and `MINIO_SECRET_KEY`).
 
 ### Using PostgreSQL instead of Amazon RDS
@@ -200,5 +195,4 @@ string is constructed from the following environment variables:
 * `POSTGRESQL_USER` - defaults to `coreapi` in the local setup
 * `POSTGRESQL_PASSWORD` - defaults to `coreapi` in the local setup
 * `POSTGRESQL_DATABASE` - defaults to `coreapi` in the local
-* `PGBOUNCER_SERVICE_HOST` - defaults to `coreapi-pgbouncer` (note that PosgreSQL/Amazon RDS is accessed through PGBouncer, thus naming)
-
+* `PGBOUNCER_SERVICE_HOST` - defaults to `coreapi-pgbouncer` (note that PostgreSQL/Amazon RDS is accessed through PGBouncer, thus naming)
