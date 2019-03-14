@@ -4,6 +4,10 @@ This section is for those interested in contributing to the development of
 fabric8-analytics. Please read through our [glossary](./glossary.md) in
 case you are not sure about terms used in the docs.
 
+## fabric8-analytics CI/CD
+
+Please find a documentation on how to setup CI/CD for your repository [here](docs/README-cicd.md).
+
 ## Running a Local Instance
 
 ### Getting All Repos
