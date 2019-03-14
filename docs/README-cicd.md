@@ -33,7 +33,7 @@ then you will need to whitelist the name of your Docker repository there.
 Simply go to <internal GitLab URL>/housekeeping and follow instructions on how to whitelist your new repository.
 If you don't know the GitLab URL, ask you peers ;)
     
-You will like want to whitelist two repositories:
+You will likely want to whitelist two repositories:
 * `openshiftio/your-service-name`
     * CentOS-based image
 * `openshiftio/rhel-your-service-name`
