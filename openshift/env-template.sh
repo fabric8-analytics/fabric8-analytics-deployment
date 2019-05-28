@@ -35,8 +35,8 @@ export LIBRARIES_IO_TOKEN='not-set'
 #
 # Create a new GitHub OAuth App here: https://github.com/settings/developers
 # You will need to provide homepage and callback URL; for the dev cluster, use following values (replace OC_USERNAME):
-# "Homepage URL" is "http://bayesian-jobs-${OC_USERNAME}-fabric8-analytics.dev.rdu2c.fabric8.io/"
-# "Authorization callback URL" is "http://bayesian-jobs-${OC_USERNAME}-fabric8-analytics.dev.rdu2c.fabric8.io/api/v1/authorized"
+# "Homepage URL" is "http://bayesian-jobs-${OC_USERNAME}-fabric8-analytics.devtools-dev.ext.devshift.net/"
+# "Authorization callback URL" is "http://bayesian-jobs-${OC_USERNAME}-fabric8-analytics.devtools-dev.ext.devshift.net/api/v1/authorized"
 # In return, you'll get GITHUB_OAUTH_CONSUMER_KEY and GITHUB_OAUTH_CONSUMER_SECRET from GitHub.
 #   Client ID is GITHUB_OAUTH_CONSUMER_KEY
 #   Client Secret is GITHUB_OAUTH_CONSUMER_SECRET
@@ -48,7 +48,7 @@ export GITHUB_OAUTH_CONSUMER_SECRET='not-set'
 # Non-essential configuration options follow. You likely don't need to touch these.
 
 # Deployment prefix
-export DEPLOYMENT_PREFIX=${DEPLOYMENT_PREFIX:-${OC_USERNAME}}
+export DEPLOYMENT_PREFIX=${OC_USERNAME}
 
 # Keycloak
 export KEYCLOAK_URL='https://sso.openshift.io'
