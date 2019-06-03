@@ -4,13 +4,10 @@
 
 
 # (Required) Dev cluster
-# Your dev cluster username
-export OC_USERNAME='not-set'
-# Your dev cluster password
-export OC_PASSWD='not-set'
 # Export dev cluster token
 export OC_TOKEN='not-set'
-
+# Usually your kerberos-id
+export USER_ID='not-set'
 
 # (Required) AWS credentials
 export AWS_ACCESS_KEY_ID='not-set'
@@ -47,8 +44,8 @@ export GITHUB_OAUTH_CONSUMER_SECRET='not-set'
 # ----------------------------------------------------------------------------------
 # Non-essential configuration options follow. You likely don't need to touch these.
 
-# Deployment prefix
-export DEPLOYMENT_PREFIX=${OC_USERNAME}
+# Deployment Prefix
+export DEPLOYMENT_PREFIX=${USER_ID}
 
 # Keycloak
 export KEYCLOAK_URL='https://sso.openshift.io'
