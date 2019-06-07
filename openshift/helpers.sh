@@ -102,7 +102,7 @@ function allocate_aws_rds() {
         --db-instance-identifier "${RDS_INSTANCE_NAME}" \
         --db-instance-class "${RDS_INSTANCE_CLASS}" \
         --db-name "${RDS_DBNAME}" \
-        --db-subnet-group-name "${RDS_SUBNET_GROUP_NAME}" \
+        #--db-subnet-group-name "${RDS_SUBNET_GROUP_NAME}" \
         --engine postgres \
         --engine-version "9.6.1" \
         --master-username "${RDS_DBADMIN}" \
