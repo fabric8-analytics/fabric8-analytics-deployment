@@ -31,7 +31,7 @@ Next step is to get credentials to signin in your dev AWS Console
 3. Repo would likely be forked. 
 4. Before trying to put a Merge Request, make sure to add `@devtools-bot` with role as **Maintainer** in your forked repo settings.    
 5. With your new `kerbroseid.yml` file, Put a Merge Request in Base Repo while ensuring that all automated tests are passed.
-6. Once Merged, You will likely to receive email from **App SRE team automation**, specifying to your AWS credentials.
+6. Once Merged, You should receive email from **App SRE team automation**, specifying your dev_console's AWS credentials.
 7. In Addition you should also receive invitation email from `@app-sre-bot` to join `@rhdt-dev` and `@app-sre` organisation.
 (Based on permissions requested). Make sure to accept this invite. This will authorise you in dev_cluster signin.
 
