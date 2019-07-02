@@ -32,7 +32,7 @@ checked out. The helper script `setup.sh` is here to do that. Run `setup.sh -h`
 and follow the instructions (most of the time, you'll be fine with running
 `setup.sh` with no arguments).
 
-### Running in OpenShift
+### Running on OpenShift
 
 This is not exactly a local development experience, but if you'd like to test your changes
 in OpenShift, there is some [documentation](openshift/README.md) on how to do it.
@@ -196,3 +196,29 @@ string is constructed from the following environment variables:
 * `POSTGRESQL_PASSWORD` - defaults to `coreapi` in the local setup
 * `POSTGRESQL_DATABASE` - defaults to `coreapi` in the local
 * `PGBOUNCER_SERVICE_HOST` - defaults to `coreapi-pgbouncer` (note that PostgreSQL/Amazon RDS is accessed through PGBouncer, thus naming)
+
+### Importing the production graph data
+
+There can be requirements where a developer will have to import the production data
+on her/his development graph database. Following process has to be followed for the
+data import:
+
+1. SRE team dumps production data on the S3 bucket `dynamodb-migration-backups-osio`
+in `osio-dev` namespace.
+2. Use the AWS Data pipeline service to import data from graph tables.
+3. Create a pipeline with the source template `Import DynamoDB backup data from S3`.
+4. Select one of the backup folders in `s3://dynamodb-migration-backups-osio/backups/prod_edgestore/`
+as `Input S3 folder`.
+5. Provide the corresponding developer dynamodb table name as `Target DynamoDB table name`.
+For example, `mykerberosid_edgestore`.
+6. Set the `DynamoDB write throughput ratio` as 1. For a faster import, the developer
+will have to set the write capacity of the respective dynamodb table to a higher number
+(For example, 100). This value has to be reset to the default as soon as the import
+completes of that table.
+7. Schedule the data pipeline to run `on pipeline activation`.
+8. Enable logging optionally and then click on `Activate`.
+9. The process involving steps from 2 to 8 has to be repeated for two other tables 
+`_graphindex` and `_titan_ids`. All three data pipelines can be run in parallel.
+10. The import may take a day to two to complete depending on the dynamodb write 
+capacity set of the developers' tables.
+
