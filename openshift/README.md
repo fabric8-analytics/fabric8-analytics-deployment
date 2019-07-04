@@ -20,22 +20,53 @@ $ brew install postgres
 $ brew install openshift-cli
 $ brew install pwgen
 ```
+
+* Get [OpenShift CLI](https://docs.openshift.com/enterprise/3.2/cli_reference/get_started_cli.html#installing-the-cli)
+
+
+For RedHat Employees, Please refer [Requesting AWS Access](README-AWS_Access.md)
+
+
+##### SIGNING IN: 
+https://devtools-dev.ext.devshift.net:8443/console/catalog with your Github Account
+
+In dev_console overview, Please make sure all your services are up and running with at least 1 POD instance.
+
+
+
 ## Configure fabric8-analytics services
 
 The deploy.sh script expects to find configuration in `env.sh` file.
 The easiest way how to create the configuration file is to copy [env-template.sh](env-template.sh) and modify it.
 
 ```shell
+$ cd openshift
 $ cp env-template.sh env.sh
 $ vim env.sh
 ```
+
+Editing `env.sh` to add required credentials and tokens.
+* Get `OC_TOKEN` from top-right Dropdown Menu in dev_console by clicking "Copy Login Command"
+* Get `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` from [AWS Console](https://console.aws.amazon.com/iam/home?#/security_credentials)
+* Generate new and set `RDS_PASSWORD`
+* `GITHUB_API_TOKENS` from https://github.com/settings/tokens
+* `LIBRARIES_IO_TOKEN` from https://libraries.io/account
+* For `GITHUB_OAUTH_CONSUMER_KEY` and `GITHUB_OAUTH_CONSUMER_SECRET`, refer comments
+
+
+For others Keys/Values refer Comments in `env.sh`
+
+
+> For Red Hatters: If your kerboros_id and github username is different: Set `OC_PROJECT="[your_kerboros_id]-fabric8-analytics"`
+ 
+
 
 ## Deploy fabric8-analytics services
 
 Just run the deploy script and enjoy!
 
 ```shell
-$ ./deploy.sh`
+$ ./deploy.sh
 ```
 
 If you have already run the script previously and therefore there exists a $OC_PROJECT project,
@@ -53,6 +84,14 @@ $ ./cleanup.sh
 ```
 
 to remove the OpenShift project and all allocated AWS resources.
+
+### FAQ's:
+1. In dev_console, `bayesian-data-importer` service is down.
+
+**cause**: In this case you have some data messed up in your Dynamo DB Tables.
+**resolution**: Completely remove **your tables only** from AWS Dynamo DB, i.e  tables prefixed with name `your_kerboros_*`. 
+Redeploy `bayesian-gremlin-http` to recreate tables and then redeploy bayesian-data-importer.
+
 
 
 ## Test not-yet-merged changes
