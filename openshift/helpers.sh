@@ -31,6 +31,7 @@ function deploy_secrets() {
     #All secrets must be base64 encoded
     oc process -p AWS_ACCESS_KEY_ID="$(/bin/echo -n "${AWS_ACCESS_KEY_ID}" | base64)" \
     -p AWS_SECRET_ACCESS_KEY="$(/bin/echo -n "${AWS_SECRET_ACCESS_KEY}" | base64)" \
+    -p AWS_DEFAULT_REGION="$(/bin/echo -n "${AWS_DEFAULT_REGION}" | base64)" \
     -p GITHUB_API_TOKENS="$(/bin/echo -n "${GITHUB_API_TOKENS}" | base64)" \
     -p GITHUB_OAUTH_CONSUMER_KEY="$(/bin/echo -n "${GITHUB_OAUTH_CONSUMER_KEY}" | base64)" \
     -p GITHUB_OAUTH_CONSUMER_SECRET="$(/bin/echo -n "${GITHUB_OAUTH_CONSUMER_SECRET}" | base64)" \
