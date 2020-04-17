@@ -92,6 +92,42 @@ to remove the OpenShift project and all allocated AWS resources.
 **resolution**: Completely remove **your tables only** from AWS Dynamo DB, i.e  tables prefixed with name `your_kerboros_*`. 
 Redeploy `bayesian-gremlin-http` to recreate tables and then redeploy bayesian-data-importer.
 
+2. After dev_cluster delpoyment some pods failed with 'Timeout' issue.
+
+**cause**: This is happens as some of the keys in 'aws' and 'aws-dynamodb' secrets are missing.
+**resolution**: Log into dev cluster console and goto Your project --> Application --> Secret
+Manually add below keys in 'aws' secrets:
+    dynamodb-access-key-id: <ID>
+    dynamodb-secret-access-key: <KEY>
+    sqs-access-key-id: <ID>
+    sqs-secret-access-key: <KEY>
+
+Note: Replace <ID> and <KEY> with the id and key values present in other keys of same secret.
+
+Manually add below key in 'aws-dynamodb' secrets:
+    aws_region: dXMtZWFzdC0x
+
+Note: Value for this key is BASE64 encoded string of AWS region, in above case its 'us-east-1'
+
+3. Upon running ./deploy.sh or any script from terminal throws INVALID TOKEN error.
+
+**cause**: If dev-cluter session is timeout / user logs into again, then it generated a new login token for CLI.
+**resolution**: Always ensure that your OC_TOKEN value in env.sh is latest as per dev-cluster console value. Get the latest value from dev-cluster console.
+
+4. AWS console does not show my RDS / DynamoDB / DataPipe lines.
+
+**cause**: AWS region is wrong in AWS console.
+**resolution**: Ensure that you have choosen right region on top-right corner of AWS console, it should be 'N. Virginia (us-east-1)' for all our development resources.
+
+5. Enable to create dev cluster project / RDS database with correct prefixes.
+
+**cause**: When Kurboros Id and Github ids are not same, we might face this issue. In env.sh we set USER_ID to kurboros id, but this value gets overwritten by git user id during delpoy.sh execution. THIS IS REQUIRED ONLY WHEN GITHUB AND KURBOROS IDS ARE DIFFERENT.
+**resolution**: Hardcode the OC_PROJECT and RDS_INSTANCE_NAME with fixed value for ${USER_ID} fields.
+Example: In env.sh, set
+    OC_PROJECT=dhpatel-fabric8-analytics
+    RDS_INSTANCE_NAME=dhpatel-bayesiandb
+
+    Note: replace dhpatel with your kurboros ID.
 
 
 ## Test not-yet-merged changes
