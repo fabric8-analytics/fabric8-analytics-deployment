@@ -76,3 +76,8 @@ export F8A_JOB_API_URL='not-set'
 
 # Sentry URL
 export SENTRY_DSN=''
+
+# If "Snyk CVE Ingestion" is required then we need to set SNYK secrets as below. 
+export SNYK_TOKEN='not-set'
+export SNYK_ISS='not-set'
+

@@ -39,6 +39,8 @@ function deploy_secrets() {
     -p FLASK_APP_SECRET_KEY="$(/bin/echo -n "${FLASK_APP_SECRET_KEY}" | base64)" \
     -p RDS_ENDPOINT="$(/bin/echo -n "${RDS_ENDPOINT}" | base64)" \
     -p RDS_PASSWORD="$(/bin/echo -n "${RDS_PASSWORD}" | base64)" \
+    -p SNYK_TOKEN="$(/bin/echo -n "${SNYK_TOKEN}" | base64)" \
+    -p SNYK_ISS="$(/bin/echo -n "${SNYK_ISS}" | base64)" \
     -f "${here}/secrets-template.yaml" > "${here}/secrets.yaml"
     oc apply -f secrets.yaml
 }
