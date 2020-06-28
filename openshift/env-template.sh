@@ -12,6 +12,8 @@ export USER_ID='not-set'
 # (Required) AWS credentials
 export AWS_ACCESS_KEY_ID='not-set'
 export AWS_SECRET_ACCESS_KEY='not-set'
+export AWS_DEFAULT_REGION='us-east-1'
+
 # PostgreSQL/RDS password to be used
 # You can generate a good password with `pwgen`:
 # $ pwgen -1cs 32
@@ -31,8 +33,7 @@ export LIBRARIES_IO_TOKEN='not-set'
 # Following section describes how to setup authentication for the jobs service. Feel free to skip it, if you don't need the service.
 #
 # Create a new GitHub OAuth App here: https://github.com/settings/developers
-# You will need to provide homepage and callback URL; for the dev cluster, use following values (replace OC_
-NAME):
+# You will need to provide homepage and callback URL; for the dev cluster, use following values (replace OC_NAME):
 # "Homepage URL" is "http://bayesian-jobs-${USER_ID}-fabric8-analytics.devtools-dev.ext.devshift.net/"
 # "Authorization callback URL" is "http://bayesian-jobs-${USER_ID}-fabric8-analytics.devtools-dev.ext.devshift.net/api/v1/authorized"
 # In return, you'll get GITHUB_OAUTH_CONSUMER_KEY and GITHUB_OAUTH_CONSUMER_SECRET from GitHub.
@@ -40,7 +41,6 @@ NAME):
 #   Client Secret is GITHUB_OAUTH_CONSUMER_SECRET
 export GITHUB_OAUTH_CONSUMER_KEY='not-set'
 export GITHUB_OAUTH_CONSUMER_SECRET='not-set'
-
 
 # ----------------------------------------------------------------------------------
 # Non-essential configuration options follow. You likely don't need to touch these.
@@ -58,8 +58,6 @@ export FLASK_APP_SECRET_KEY='notsosecret'
 export OC_URI='devtools-dev.ext.devshift.net:8443'
 export OC_PROJECT="${USER_ID}-fabric8-analytics"
 
-# AWS
-export AWS_DEFAULT_REGION='us-east-1'
 ## RDS configuration variables are use to provision RDS instance
 export RDS_ENDPOINT=''
 export RDS_INSTANCE_NAME="${USER_ID}-bayesiandb"
@@ -76,3 +74,8 @@ export F8A_JOB_API_URL='not-set'
 
 # Sentry URL
 export SENTRY_DSN=''
+
+# If "Snyk CVE Ingestion" is required then we need to set SNYK secrets as below. 
+export SNYK_TOKEN='not-set'
+export SNYK_ISS='not-set'
+

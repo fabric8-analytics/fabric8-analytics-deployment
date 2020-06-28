@@ -57,7 +57,7 @@ Editing `env.sh` to add required credentials and tokens.
 For others Keys/Values refer Comments in `env.sh`
 
 
-> For Red Hatters: If your kerboros_id and github username is different: Set `OC_PROJECT="[your_kerboros_id]-fabric8-analytics"`
+> For Red Hatters: If your kerberos_id and github username is different: Set `OC_PROJECT="[your_kerberos_id]-fabric8-analytics"`
  
 
 
@@ -89,9 +89,43 @@ to remove the OpenShift project and all allocated AWS resources.
 1. In dev_console, `bayesian-data-importer` service is down.
 
 **cause**: In this case you have some data messed up in your Dynamo DB Tables.
-**resolution**: Completely remove **your tables only** from AWS Dynamo DB, i.e  tables prefixed with name `your_kerboros_*`. 
+**resolution**: Completely remove **your tables only** from AWS Dynamo DB, i.e  tables prefixed with name `{YOUR_KERBEROS_ID}_*`. 
 Redeploy `bayesian-gremlin-http` to recreate tables and then redeploy bayesian-data-importer.
 
+2. After dev_cluster delpoyment some pods failed with 'Timeout' issue.
+
+**cause**: This is happens as some of the keys in 'aws' and 'aws-dynamodb' secrets are missing.
+**resolution**: Log into dev cluster console and goto Your project --> Application --> Secret
+Manually add below keys in 'aws' secrets:
+    dynamodb-access-key-id: <ID>
+    dynamodb-secret-access-key: <KEY>
+    sqs-access-key-id: <ID>
+    sqs-secret-access-key: <KEY>
+
+Note: Replace <ID> and <KEY> with the id and key values present in other keys of same secret.
+
+Manually add below key in 'aws-dynamodb' secrets:
+    aws_region: dXMtZWFzdC0x
+
+Note: Value for this key is BASE64 encoded string of AWS region, in above case its 'us-east-1', which can be generated as below:
+```
+$ echo "us-east-1" | base64
+```
+
+3. Upon running `$ ./deploy.sh` or any script from terminal throws INVALID TOKEN error.
+
+**cause**: If dev-cluter session is timeout / user logs into again, then it generated a new login token for CLI.
+**resolution**: Always ensure that your `OC_TOKEN` value in env.sh is latest as per dev-cluster console value. Get the latest value from dev-cluster console.
+
+4. Enable to create dev cluster project / RDS database with correct prefixes.
+
+**cause**: When kerberos Id and Github ids are not same, we might face this issue. In env.sh we set USER_ID to kerberos id, but this value gets overwritten by git user id during `$ ./delpoy.sh` execution. THIS IS REQUIRED ONLY WHEN GITHUB AND KERBEROS IDS ARE DIFFERENT.
+**resolution**: Hardcode the `OC_PROJECT` and `RDS_INSTANCE_NAME` with fixed value for ${USER_ID} fields.
+Example: In env.sh, set
+    OC_PROJECT={YOUR_KERBEROS_ID}-fabric8-analytics
+    RDS_INSTANCE_NAME={YOUR_KERBEROS_ID}-bayesiandb
+
+Note: Jump to dev-cluster console --> `Monitor` page to view failures message and logs.
 
 
 ## Test not-yet-merged changes

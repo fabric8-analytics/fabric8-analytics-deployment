@@ -31,6 +31,7 @@ function deploy_secrets() {
     #All secrets must be base64 encoded
     oc process -p AWS_ACCESS_KEY_ID="$(/bin/echo -n "${AWS_ACCESS_KEY_ID}" | base64)" \
     -p AWS_SECRET_ACCESS_KEY="$(/bin/echo -n "${AWS_SECRET_ACCESS_KEY}" | base64)" \
+    -p AWS_DEFAULT_REGION="$(/bin/echo -n "${AWS_DEFAULT_REGION}" | base64)" \
     -p GITHUB_API_TOKENS="$(/bin/echo -n "${GITHUB_API_TOKENS}" | base64)" \
     -p GITHUB_OAUTH_CONSUMER_KEY="$(/bin/echo -n "${GITHUB_OAUTH_CONSUMER_KEY}" | base64)" \
     -p GITHUB_OAUTH_CONSUMER_SECRET="$(/bin/echo -n "${GITHUB_OAUTH_CONSUMER_SECRET}" | base64)" \
@@ -38,6 +39,8 @@ function deploy_secrets() {
     -p FLASK_APP_SECRET_KEY="$(/bin/echo -n "${FLASK_APP_SECRET_KEY}" | base64)" \
     -p RDS_ENDPOINT="$(/bin/echo -n "${RDS_ENDPOINT}" | base64)" \
     -p RDS_PASSWORD="$(/bin/echo -n "${RDS_PASSWORD}" | base64)" \
+    -p SNYK_TOKEN="$(/bin/echo -n "${SNYK_TOKEN}" | base64)" \
+    -p SNYK_ISS="$(/bin/echo -n "${SNYK_ISS}" | base64)" \
     -f "${here}/secrets-template.yaml" > "${here}/secrets.yaml"
     oc apply -f secrets.yaml
 }
