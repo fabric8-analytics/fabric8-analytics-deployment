@@ -57,7 +57,7 @@ for key in "$@"; do
 done
 [ "$purge_aws_resources" == false ] && echo "Use --purge-aws-resources if you want to also clear previously allocated AWS resources (RDS database, SQS queues, S3 buckets, DynamoDB tables)."
 
-openshift_login
+# openshift_login
 create_or_reuse_project
 allocate_aws_rds
 generate_and_deploy_config

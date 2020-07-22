@@ -3,7 +3,7 @@ function is_set_or_fail() {
     local name=$1
     local value=$2
 
-    if [ ! -v value ] || [ "${value}" == "not-set" ]; then
+    if [ "${value}" == "not-set" ]; then
         echo "You have to set $name" >&2
         exit 1
     fi
@@ -41,6 +41,7 @@ function deploy_secrets() {
     -p RDS_PASSWORD="$(/bin/echo -n "${RDS_PASSWORD}" | base64)" \
     -p SNYK_TOKEN="$(/bin/echo -n "${SNYK_TOKEN}" | base64)" \
     -p SNYK_ISS="$(/bin/echo -n "${SNYK_ISS}" | base64)" \
+    -p HPF_MAVEN_INSIGHTS_BUCKET="$(/bin/echo -n "${USER_ID}-hpf-insights" | base64)" \
     -f "${here}/secrets-template.yaml" > "${here}/secrets.yaml"
     oc apply -f secrets.yaml
 }
@@ -91,11 +92,12 @@ function tag_rds_instance() {
     echo "Tagging RDS instance with ${TAGS}"
     aws rds add-tags-to-resource \
             --resource-name "${RDS_ARN}" \
-            --tags "${TAGS}"
+            --tags "${TAGS}" >/dev/null
 }
 
 function get_rds_instance_info() {
-    aws --output=table rds describe-db-instances --db-instance-identifier "${RDS_INSTANCE_NAME}" 2>/dev/null
+    aws --output=json rds describe-db-instances --db-instance-identifier "${RDS_INSTANCE_NAME}" 2>/dev/null 1>rds.json
+    return $?
 }
 
 function allocate_aws_rds() {
@@ -105,7 +107,6 @@ function allocate_aws_rds() {
         --db-instance-identifier "${RDS_INSTANCE_NAME}" \
         --db-instance-class "${RDS_INSTANCE_CLASS}" \
         --db-name "${RDS_DBNAME}" \
-        #--db-subnet-group-name "${RDS_SUBNET_GROUP_NAME}" \
         --engine postgres \
         --engine-version "9.6.1" \
         --master-username "${RDS_DBADMIN}" \
@@ -132,8 +133,9 @@ function wait_for_rds_instance_info() {
     while true; do
         echo "Trying to get RDS DB endpoint for ${RDS_INSTANCE_NAME} ..."
 
-        RDS_ENDPOINT=$(get_rds_instance_info | grep -w Address | awk '{print $4}')
-        RDS_ARN=$(get_rds_instance_info | grep -w DBInstanceArn | awk '{print $4}')
+        get_rds_instance_info
+        RDS_ENDPOINT=$(jq -r '.DBInstances[0].Endpoint.Address' rds.json)
+        RDS_ARN=$(jq -r '.DBInstances[0].DBInstanceArn' rds.json)
 
         if [ -z "${RDS_ENDPOINT}" ]; then
             echo "DB is still initializing, waiting 30 seconds and retrying ..."
