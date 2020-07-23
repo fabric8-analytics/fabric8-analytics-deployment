@@ -29,19 +29,21 @@ function generate_and_deploy_config() {
 
 function deploy_secrets() {
     #All secrets must be base64 encoded
-    oc process -p AWS_ACCESS_KEY_ID="$(/bin/echo -n "${AWS_ACCESS_KEY_ID}" | base64)" \
-    -p AWS_SECRET_ACCESS_KEY="$(/bin/echo -n "${AWS_SECRET_ACCESS_KEY}" | base64)" \
-    -p AWS_DEFAULT_REGION="$(/bin/echo -n "${AWS_DEFAULT_REGION}" | base64)" \
-    -p GITHUB_API_TOKENS="$(/bin/echo -n "${GITHUB_API_TOKENS}" | base64)" \
-    -p GITHUB_OAUTH_CONSUMER_KEY="$(/bin/echo -n "${GITHUB_OAUTH_CONSUMER_KEY}" | base64)" \
+    oc process -p AWS_ACCESS_KEY_ID="$(echo -n "${AWS_ACCESS_KEY_ID}" | base64)" \
+    -p AWS_SECRET_ACCESS_KEY="$(echo -n "${AWS_SECRET_ACCESS_KEY}" | base64)" \
+    -p AWS_DEFAULT_REGION="$(echo -n "${AWS_DEFAULT_REGION}" | base64)" \
+    -p GITHUB_API_TOKENS="$(echo -n "${GITHUB_API_TOKENS}" | base64)" \
+    -p GITHUB_OAUTH_CONSUMER_KEY="$(echo -n "${GITHUB_OAUTH_CONSUMER_KEY}" | base64)" \
     -p GITHUB_OAUTH_CONSUMER_SECRET="$(/bin/echo -n "${GITHUB_OAUTH_CONSUMER_SECRET}" | base64)" \
-    -p LIBRARIES_IO_TOKEN="$(/bin/echo -n "${LIBRARIES_IO_TOKEN}" | base64)" \
-    -p FLASK_APP_SECRET_KEY="$(/bin/echo -n "${FLASK_APP_SECRET_KEY}" | base64)" \
-    -p RDS_ENDPOINT="$(/bin/echo -n "${RDS_ENDPOINT}" | base64)" \
-    -p RDS_PASSWORD="$(/bin/echo -n "${RDS_PASSWORD}" | base64)" \
-    -p SNYK_TOKEN="$(/bin/echo -n "${SNYK_TOKEN}" | base64)" \
-    -p SNYK_ISS="$(/bin/echo -n "${SNYK_ISS}" | base64)" \
-    -p HPF_MAVEN_INSIGHTS_BUCKET="$(/bin/echo -n "${USER_ID}-hpf-insights" | base64)" \
+    -p LIBRARIES_IO_TOKEN="$(echo -n "${LIBRARIES_IO_TOKEN}" | base64)" \
+    -p FLASK_APP_SECRET_KEY="$(echo -n "${FLASK_APP_SECRET_KEY}" | base64)" \
+    -p RDS_ENDPOINT="$(echo -n "${RDS_ENDPOINT}" | base64)" \
+    -p RDS_PASSWORD="$(echo -n "${RDS_PASSWORD}" | base64)" \
+    -p SNYK_TOKEN="$(echo -n "${SNYK_TOKEN}" | base64)" \
+    -p SNYK_ISS="$(echo -n "${SNYK_ISS}" | base64)" \
+    -p CVAE_NPM_INSIGHTS_BUCKET="$(echo -n "${USER_ID}-cvae-npm-insights" | base64)" \
+    -p HPF_PYPI_INSIGHTS_BUCKET="$(echo -n "${USER_ID}-hpf-pypi-insights" | base64)" \
+    -p HPF_MAVEN_INSIGHTS_BUCKET="$(echo -n "${USER_ID}-hpf-maven-insights" | base64)" \
     -f "${here}/secrets-template.yaml" > "${here}/secrets.yaml"
     oc apply -f secrets.yaml
 }
@@ -49,11 +51,7 @@ function deploy_secrets() {
 function oc_process_apply() {
     echo -e "\\n Processing template - $1 ($2) \\n"
     # Don't quote $2 as we need it to split into individual arguments
-    oc process -f "$1" $2 | oc apply -f -
-}
-
-function openshift_login() {
-    oc login "${OC_URI}" --token="${OC_TOKEN}" --insecure-skip-tls-verify=true
+    oc process -f "$1" $2 | oc apply -f - --wait=true
 }
 
 function purge_aws_resources() {

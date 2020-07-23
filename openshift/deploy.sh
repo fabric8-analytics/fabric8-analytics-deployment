@@ -37,12 +37,6 @@ is_set_or_fail AWS_SECRET_ACCESS_KEY "${AWS_SECRET_ACCESS_KEY}"
 is_set_or_fail AWS_DEFAULT_REGION "${AWS_DEFAULT_REGION}"
 is_set_or_fail OC_TOKEN "${OC_TOKEN}"
 
-templates_dir="${here}/templates"
-templates="fabric8-analytics-jobs fabric8-analytics-server fabric8-analytics-data-model
-fabric8-analytics-worker fabric8-analytics-pgbouncer gremlin-docker
-fabric8-analytics-license-analysis fabric8-analytics-stack-analysis
-f8a-server-backbone fabric8-analytics-stack-report-ui fabric8-analytics-api-gateway"
-
 purge_aws_resources=false # default
 for key in "$@"; do
     case $key in
@@ -63,28 +57,19 @@ allocate_aws_rds
 generate_and_deploy_config
 deploy_secrets
 
-#Get templates for fabric8-analytics projects
-for template in ${templates}
-do
-    curl -sS "https://raw.githubusercontent.com/fabric8-analytics/${template}/master/openshift/template.yaml" > "${templates_dir}/${template#fabric8-analytics-}.yaml"
-done
+github_org_base="https://raw.githubusercontent.com/fabric8-analytics"
+openshift_template_path="master/openshift/template.yaml"
+openshift_template_path2="master/openshift/template-prod.yaml"
 
-oc_process_apply "${templates_dir}/pgbouncer.yaml"
+oc_process_apply "${github_org_base}/fabric8-analytics-pgbouncer/${openshift_template_path}"
+oc_process_apply "${github_org_base}/gremlin-docker/${openshift_template_path}" "-p CHANNELIZER=http -p REST_VALUE=1 -p IMAGE_TAG=latest"
+oc_process_apply "${github_org_base}/gremlin-docker/${openshift_template_path}" "-p CHANNELIZER=http -p REST_VALUE=1 -p IMAGE_TAG=latest -p QUERY_ADMINISTRATION_REGION=ingestion"
 sleep 20
-oc_process_apply "${templates_dir}/gremlin-docker.yaml" "-p CHANNELIZER=http -p REST_VALUE=1 -p IMAGE_TAG=latest"
-sleep 20
-oc_process_apply "${templates_dir}/gremlin-docker.yaml" "-p CHANNELIZER=http -p REST_VALUE=1 -p IMAGE_TAG=latest -p QUERY_ADMINISTRATION_REGION=ingestion"
-sleep 20
-oc_process_apply "${templates_dir}/data-model.yaml"
-sleep 20
-oc_process_apply "${templates_dir}/worker.yaml" "-p WORKER_ADMINISTRATION_REGION=api -p WORKER_RUN_DB_MIGRATIONS=1 -p WORKER_EXCLUDE_QUEUES=GraphImporterTask"
-sleep 20
-oc_process_apply "${templates_dir}/f8a-server-backbone.yaml"
-sleep 20
-oc_process_apply "${templates_dir}/server.yaml"
-sleep 20
-# kronos-pypi is not used/maintained now
-# sleep 20
-# oc_process_apply "${templates_dir}/stack-analysis.yaml" "-p KRONOS_SCORING_REGION=pypi"
-sleep 20
-oc_process_apply "${templates_dir}/license-analysis.yaml"
+oc_process_apply "${github_org_base}/fabric8-analytics-data-model/${openshift_template_path}"
+oc_process_apply "${github_org_base}/fabric8-analytics-worker/${openshift_template_path}" "-p WORKER_ADMINISTRATION_REGION=api -p WORKER_RUN_DB_MIGRATIONS=1 -p WORKER_EXCLUDE_QUEUES=GraphImporterTask"
+oc_process_apply "${github_org_base}/f8a-server-backbone/${openshift_template_path}"
+oc_process_apply "${github_org_base}/fabric8-analytics-server/${openshift_template_path}"
+oc_process_apply "${github_org_base}/fabric8-analytics-license-analysis/${openshift_template_path}"
+oc_process_apply "${github_org_base}/fabric8-analytics-npm-insights/${openshift_template_path}"
+oc_process_apply "${github_org_base}/f8a-pypi-insights/${openshift_template_path}"
+oc_process_apply "${github_org_base}/f8a-hpf-insights/${openshift_template_path2}" "-p HPF_SCORING_REGION=maven -p RESTART_POLICY=Always"
