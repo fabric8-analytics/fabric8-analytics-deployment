@@ -68,14 +68,6 @@ function remove_project_resources() {
     fi
 }
 
-function delete_project_and_aws_resources() {
-    if oc get project "${OC_PROJECT}"; then
-        echo "Deleting project ${OC_PROJECT}"
-        oc delete project "${OC_PROJECT}"
-    fi
-    purge_aws_resources
-}
-
 function create_or_reuse_project() {
     if oc get project "${OC_PROJECT}"; then
         oc project "${OC_PROJECT}"
@@ -85,8 +77,62 @@ function create_or_reuse_project() {
     fi
 }
 
+function tag_rds_instance() {
+    TAGS="Key=ENV,Value=${DEPLOYMENT_PREFIX}"
+    echo "Tagging RDS instance with ${TAGS}"
+    aws rds add-tags-to-resource \
+            --resource-name "${RDS_ARN}" \
+            --tags "${TAGS}" >/dev/null
+}
+
+function get_rds_instance_info() {
+    aws --output=json rds describe-db-instances --db-instance-identifier "${RDS_INSTANCE_NAME}" 2>/dev/null 1>rds.json
+    return $?
+}
+
 function allocate_aws_rds() {
-    RDS_ENDPOINT="f8a-postgres"
-    oc apply -f postgres.yaml --wait=true
+    if ! get_rds_instance_info; then
+        aws rds create-db-instance \
+        --allocated-storage "${RDS_STORAGE}" \
+        --db-instance-identifier "${RDS_INSTANCE_NAME}" \
+        --db-instance-class "${RDS_INSTANCE_CLASS}" \
+        --db-name "${RDS_DBNAME}" \
+        --engine postgres \
+        --engine-version "9.6.1" \
+        --master-username "${RDS_DBADMIN}" \
+        --master-user-password "${RDS_PASSWORD}" \
+        --publicly-accessible \
+        --storage-type gp2
+        #--storage-encrypted
+        echo "Waiting (60s) for ${RDS_INSTANCE_NAME} to come online"
+        sleep 60
+        wait_for_rds_instance_info
+    else
+        echo "DB instance ${RDS_INSTANCE_NAME} already exists"
+        wait_for_rds_instance_info
+        if [ "$purge_aws_resources" == true ]; then
+            echo "recreating database"
+            PGPASSWORD="${RDS_PASSWORD}" psql -d template1 -h "${RDS_ENDPOINT}" -U "${RDS_DBADMIN}" -c "drop database ${RDS_DBNAME}"
+            PGPASSWORD="${RDS_PASSWORD}" psql -d template1 -h "${RDS_ENDPOINT}" -U "${RDS_DBADMIN}" -c "create database ${RDS_DBNAME}"
+        fi
+    fi
+    tag_rds_instance
+}
+
+function wait_for_rds_instance_info() {
+    while true; do
+        echo "Trying to get RDS DB endpoint for ${RDS_INSTANCE_NAME} ..."
+
+        get_rds_instance_info
+        RDS_ENDPOINT=$(jq -r '.DBInstances[0].Endpoint.Address' rds.json)
+        RDS_ARN=$(jq -r '.DBInstances[0].DBInstanceArn' rds.json)
+
+        if [ -z "${RDS_ENDPOINT}" ]; then
+            echo "DB is still initializing, waiting 30 seconds and retrying ..."
+            sleep 30
+        else
+            break
+        fi
+    done
 }
 

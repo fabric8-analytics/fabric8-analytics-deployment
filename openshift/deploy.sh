@@ -51,7 +51,7 @@ for key in "$@"; do
 done
 [ "$purge_aws_resources" == false ] && echo "Use --purge-aws-resources if you want to also clear previously allocated AWS resources (RDS database, SQS queues, S3 buckets, DynamoDB tables)."
 
-# openshift_login
+openshift_login
 create_or_reuse_project
 allocate_aws_rds
 generate_and_deploy_config
@@ -62,14 +62,15 @@ openshift_template_path="master/openshift/template.yaml"
 openshift_template_path2="master/openshift/template-prod.yaml"
 
 oc_process_apply "${github_org_base}/fabric8-analytics-pgbouncer/${openshift_template_path}"
-oc_process_apply "${github_org_base}/gremlin-docker/${openshift_template_path}" "-p CHANNELIZER=http -p REST_VALUE=1 -p IMAGE_TAG=latest"
-oc_process_apply "${github_org_base}/gremlin-docker/${openshift_template_path}" "-p CHANNELIZER=http -p REST_VALUE=1 -p IMAGE_TAG=latest -p QUERY_ADMINISTRATION_REGION=ingestion"
+oc_process_apply "${github_org_base}/gremlin-docker/${openshift_template_path}" "-p CHANNELIZER=http -p REST_VALUE=1 -p IMAGE_TAG=latest -p CPU_REQUEST=100m -p CPU_LIMIT=250m"
+oc_process_apply "${github_org_base}/gremlin-docker/${openshift_template_path}" "-p CHANNELIZER=http -p REST_VALUE=1 -p IMAGE_TAG=latest -p QUERY_ADMINISTRATION_REGION=ingestion -p CPU_REQUEST=100m -p CPU_LIMIT=250m"
 sleep 20
 oc_process_apply "${github_org_base}/fabric8-analytics-data-model/${openshift_template_path}"
-oc_process_apply "${github_org_base}/fabric8-analytics-worker/${openshift_template_path}" "-p WORKER_ADMINISTRATION_REGION=api -p WORKER_RUN_DB_MIGRATIONS=1 -p WORKER_EXCLUDE_QUEUES=GraphImporterTask"
+oc_process_apply "${github_org_base}/fabric8-analytics-worker/${openshift_template_path}" "-p WORKER_ADMINISTRATION_REGION=api -p WORKER_RUN_DB_MIGRATIONS=1 -p WORKER_EXCLUDE_QUEUES=GraphImporterTask -p CPU_REQUEST=100m -p CPU_LIMIT=250m"
+sleep 10
 oc_process_apply "${github_org_base}/f8a-server-backbone/${openshift_template_path}"
 oc_process_apply "${github_org_base}/fabric8-analytics-server/${openshift_template_path}"
-oc_process_apply "${github_org_base}/fabric8-analytics-license-analysis/${openshift_template_path}"
-oc_process_apply "${github_org_base}/fabric8-analytics-npm-insights/${openshift_template_path}"
-oc_process_apply "${github_org_base}/f8a-pypi-insights/${openshift_template_path}"
-oc_process_apply "${github_org_base}/f8a-hpf-insights/${openshift_template_path2}" "-p HPF_SCORING_REGION=maven -p RESTART_POLICY=Always"
+oc_process_apply "${github_org_base}/fabric8-analytics-license-analysis/${openshift_template_path}" "-p CPU_REQUEST=100m -p CPU_LIMIT=250m"
+oc_process_apply "${github_org_base}/fabric8-analytics-npm-insights/${openshift_template_path}" "-p CPU_REQUEST=100m -p CPU_LIMIT=250m"
+oc_process_apply "${github_org_base}/f8a-pypi-insights/${openshift_template_path}" "-p CPU_REQUEST=100m -p CPU_LIMIT=250m"
+oc_process_apply "${github_org_base}/f8a-hpf-insights/${openshift_template_path2}" "-p HPF_SCORING_REGION=maven -p RESTART_POLICY=Always -p CPU_REQUEST=100m -p CPU_LIMIT=250m"
