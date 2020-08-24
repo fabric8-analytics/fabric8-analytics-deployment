@@ -17,6 +17,7 @@ objects:
     three-scale-api-host-url: "${THREE_SCALE_API_HOST_URL}"
     auth-url: "${AUTH_URL}"
     notification-url: "${NOTIFICATION_URL}"
+    snyk_api_token_validation_url: "${SNYK_API_TOKEN_VALIDATION_URL}"
 
 parameters:
 - description: Deployment prefix used for deployment-specific AWS resources
@@ -65,5 +66,11 @@ parameters:
   displayName: Notification URL
   required: false
   name: NOTIFICATION_URL
+  value: ""
+
+- description: Snyk token validation URL
+  displayName: Snyk token validation URL
+  required: false
+  name: SNYK_API_TOKEN_VALIDATION_URL
   value: ""
 
