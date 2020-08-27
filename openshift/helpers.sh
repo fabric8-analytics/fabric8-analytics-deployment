@@ -3,7 +3,7 @@ function is_set_or_fail() {
     local name=$1
     local value=$2
 
-    if [ ! -v value ] || [ "${value}" == "not-set" ]; then
+    if [ -z ${value} ] || [ "${value}" == "not-set" ]; then
         echo "You have to set $name" >&2
         exit 1
     fi
@@ -41,6 +41,8 @@ function deploy_secrets() {
     -p RDS_PASSWORD="$(/bin/echo -n "${RDS_PASSWORD}" | base64)" \
     -p SNYK_TOKEN="$(/bin/echo -n "${SNYK_TOKEN}" | base64)" \
     -p SNYK_ISS="$(/bin/echo -n "${SNYK_ISS}" | base64)" \
+    -p ENCRYPTION_KEY_FOR_SNYK_TOKEN="$(/bin/echo -n "${ENCRYPTION_KEY_FOR_SNYK_TOKEN}" | base64)" \
+    -p DEPLOYMENT_PREFIX="$(/bin/echo -n "${DEPLOYMENT_PREFIX}")" \
     -f "${here}/secrets-template.yaml" > "${here}/secrets.yaml"
     oc apply -f secrets.yaml
 }
