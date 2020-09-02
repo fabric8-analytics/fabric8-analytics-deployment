@@ -42,7 +42,6 @@ function deploy_secrets() {
     -p SNYK_TOKEN="$(/bin/echo -n "${SNYK_TOKEN}" | base64)" \
     -p SNYK_ISS="$(/bin/echo -n "${SNYK_ISS}" | base64)" \
     -p ENCRYPTION_KEY_FOR_SNYK_TOKEN="$(/bin/echo -n "${ENCRYPTION_KEY_FOR_SNYK_TOKEN}" | base64)" \
-    -p DEPLOYMENT_PREFIX="$(/bin/echo -n "${DEPLOYMENT_PREFIX}")" \
     -f "${here}/secrets-template.yaml" > "${here}/secrets.yaml"
     oc apply -f secrets.yaml
 }

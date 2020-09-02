@@ -30,7 +30,7 @@ source env.sh
 #Check if required env variables are set
 is_set_or_fail RDS_PASSWORD "${RDS_PASSWORD}"
 is_set_or_fail RDS_INSTANCE_NAME "${RDS_INSTANCE_NAME}"
-is_set_or_fail OC_USERNAME "${OC_USERNAME}"
+#is_set_or_fail OC_USERNAME "${OC_USERNAME}"
 #is_set_or_fail OC_PASSWD "${OC_PASSWD}"
 is_set_or_fail AWS_ACCESS_KEY_ID "${AWS_ACCESS_KEY_ID}"
 is_set_or_fail AWS_SECRET_ACCESS_KEY "${AWS_SECRET_ACCESS_KEY}"
