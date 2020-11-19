@@ -3,7 +3,7 @@ function is_set_or_fail() {
     local name=$1
     local value=$2
 
-    if [ -z ${value} ] || [ "${value}" == "not-set" ]; then
+    if [ "${value}" == "not-set" ]; then
         echo "You have to set $name" >&2
         exit 1
     fi
@@ -29,19 +29,22 @@ function generate_and_deploy_config() {
 
 function deploy_secrets() {
     #All secrets must be base64 encoded
-    oc process -p AWS_ACCESS_KEY_ID="$(/bin/echo -n "${AWS_ACCESS_KEY_ID}" | base64)" \
-    -p AWS_SECRET_ACCESS_KEY="$(/bin/echo -n "${AWS_SECRET_ACCESS_KEY}" | base64)" \
-    -p AWS_DEFAULT_REGION="$(/bin/echo -n "${AWS_DEFAULT_REGION}" | base64)" \
-    -p GITHUB_API_TOKENS="$(/bin/echo -n "${GITHUB_API_TOKENS}" | base64)" \
-    -p GITHUB_OAUTH_CONSUMER_KEY="$(/bin/echo -n "${GITHUB_OAUTH_CONSUMER_KEY}" | base64)" \
+    oc process -p AWS_ACCESS_KEY_ID="$(echo -n "${AWS_ACCESS_KEY_ID}" | base64)" \
+    -p AWS_SECRET_ACCESS_KEY="$(echo -n "${AWS_SECRET_ACCESS_KEY}" | base64)" \
+    -p AWS_DEFAULT_REGION="$(echo -n "${AWS_DEFAULT_REGION}" | base64)" \
+    -p GITHUB_API_TOKENS="$(echo -n "${GITHUB_API_TOKENS}" | base64)" \
+    -p GITHUB_OAUTH_CONSUMER_KEY="$(echo -n "${GITHUB_OAUTH_CONSUMER_KEY}" | base64)" \
     -p GITHUB_OAUTH_CONSUMER_SECRET="$(/bin/echo -n "${GITHUB_OAUTH_CONSUMER_SECRET}" | base64)" \
-    -p LIBRARIES_IO_TOKEN="$(/bin/echo -n "${LIBRARIES_IO_TOKEN}" | base64)" \
-    -p FLASK_APP_SECRET_KEY="$(/bin/echo -n "${FLASK_APP_SECRET_KEY}" | base64)" \
-    -p RDS_ENDPOINT="$(/bin/echo -n "${RDS_ENDPOINT}" | base64)" \
-    -p RDS_PASSWORD="$(/bin/echo -n "${RDS_PASSWORD}" | base64)" \
-    -p SNYK_TOKEN="$(/bin/echo -n "${SNYK_TOKEN}" | base64)" \
-    -p SNYK_ISS="$(/bin/echo -n "${SNYK_ISS}" | base64)" \
+    -p LIBRARIES_IO_TOKEN="$(echo -n "${LIBRARIES_IO_TOKEN}" | base64)" \
+    -p FLASK_APP_SECRET_KEY="$(echo -n "${FLASK_APP_SECRET_KEY}" | base64)" \
+    -p RDS_ENDPOINT="$(echo -n "${RDS_ENDPOINT}" | base64)" \
+    -p RDS_PASSWORD="$(echo -n "${RDS_PASSWORD}" | base64)" \
+    -p SNYK_TOKEN="$(echo -n "${SNYK_TOKEN}" | base64)" \
+    -p SNYK_ISS="$(echo -n "${SNYK_ISS}" | base64)" \
     -p ENCRYPTION_KEY_FOR_SNYK_TOKEN="$(/bin/echo -n "${ENCRYPTION_KEY_FOR_SNYK_TOKEN}" | base64)" \
+    -p CVAE_NPM_INSIGHTS_BUCKET="$(echo -n "${USER_ID}-cvae-npm-insights" | base64)" \
+    -p HPF_PYPI_INSIGHTS_BUCKET="$(echo -n "${USER_ID}-hpf-pypi-insights" | base64)" \
+    -p HPF_MAVEN_INSIGHTS_BUCKET="$(echo -n "${USER_ID}-hpf-maven-insights" | base64)" \
     -f "${here}/secrets-template.yaml" > "${here}/secrets.yaml"
     oc apply -f secrets.yaml
 }
@@ -49,11 +52,7 @@ function deploy_secrets() {
 function oc_process_apply() {
     echo -e "\\n Processing template - $1 ($2) \\n"
     # Don't quote $2 as we need it to split into individual arguments
-    oc process -f "$1" $2 | oc apply -f -
-}
-
-function openshift_login() {
-    oc login "${OC_URI}" --token="${OC_TOKEN}" --insecure-skip-tls-verify=true
+    oc process -f "$1" $2 | oc apply -f - --wait=true
 }
 
 function purge_aws_resources() {
@@ -70,14 +69,6 @@ function remove_project_resources() {
     fi
 }
 
-function delete_project_and_aws_resources() {
-    if oc get project "${OC_PROJECT}"; then
-        echo "Deleting project ${OC_PROJECT}"
-        oc delete project "${OC_PROJECT}"
-    fi
-    purge_aws_resources
-}
-
 function create_or_reuse_project() {
     if oc get project "${OC_PROJECT}"; then
         oc project "${OC_PROJECT}"
@@ -92,11 +83,12 @@ function tag_rds_instance() {
     echo "Tagging RDS instance with ${TAGS}"
     aws rds add-tags-to-resource \
             --resource-name "${RDS_ARN}" \
-            --tags "${TAGS}"
+            --tags "${TAGS}" >/dev/null
 }
 
 function get_rds_instance_info() {
-    aws --output=table rds describe-db-instances --db-instance-identifier "${RDS_INSTANCE_NAME}" 2>/dev/null
+    aws --output=json rds describe-db-instances --db-instance-identifier "${RDS_INSTANCE_NAME}" 2>/dev/null 1>rds.json
+    return $?
 }
 
 function allocate_aws_rds() {
@@ -106,7 +98,6 @@ function allocate_aws_rds() {
         --db-instance-identifier "${RDS_INSTANCE_NAME}" \
         --db-instance-class "${RDS_INSTANCE_CLASS}" \
         --db-name "${RDS_DBNAME}" \
-        #--db-subnet-group-name "${RDS_SUBNET_GROUP_NAME}" \
         --engine postgres \
         --engine-version "9.6.1" \
         --master-username "${RDS_DBADMIN}" \
@@ -133,8 +124,9 @@ function wait_for_rds_instance_info() {
     while true; do
         echo "Trying to get RDS DB endpoint for ${RDS_INSTANCE_NAME} ..."
 
-        RDS_ENDPOINT=$(get_rds_instance_info | grep -w Address | awk '{print $4}')
-        RDS_ARN=$(get_rds_instance_info | grep -w DBInstanceArn | awk '{print $4}')
+        get_rds_instance_info
+        RDS_ENDPOINT=$(jq -r '.DBInstances[0].Endpoint.Address' rds.json)
+        RDS_ARN=$(jq -r '.DBInstances[0].DBInstanceArn' rds.json)
 
         if [ -z "${RDS_ENDPOINT}" ]; then
             echo "DB is still initializing, waiting 30 seconds and retrying ..."

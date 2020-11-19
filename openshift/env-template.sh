@@ -55,7 +55,6 @@ export KEYCLOAK_URL='https://sso.openshift.io'
 export FLASK_APP_SECRET_KEY='notsosecret'
 
 # Dev cluster
-export OC_URI='devtools-dev.ext.devshift.net:8443'
 export OC_PROJECT="${USER_ID}-fabric8-analytics"
 
 ## RDS configuration variables are use to provision RDS instance

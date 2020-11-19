@@ -98,3 +98,4 @@ target/
 openshift/config.yaml
 openshift/secrets.yaml
 openshift/env.sh
+openshift/rds.json

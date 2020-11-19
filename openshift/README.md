@@ -2,12 +2,12 @@
 
 ## Install required tools
 
-Use your preferred package manager to install `aws-cli`, `psql`, `origin-clients` and `pwgen`.
+Use your preferred package manager to install `aws-cli`, `psql`, `origin-clients`, `jq` and `pwgen`.
 
 If you are running Fedora, then following command will do the trick:
 
 ```shell
-$ sudo dnf install awscli pwgen postgresql origin-clients
+$ sudo dnf install awscli pwgen postgresql origin-clients jq
 ```
 
 Mac users will also need to install gawk from brew.
@@ -19,19 +19,13 @@ $ brew install awscli
 $ brew install postgres
 $ brew install openshift-cli
 $ brew install pwgen
+$ brew install jq
 ```
 
 * Get [OpenShift CLI](https://docs.openshift.com/enterprise/3.2/cli_reference/get_started_cli.html#installing-the-cli)
 
 
 For RedHat Employees, Please refer [Requesting AWS Access](README-AWS_Access.md)
-
-
-##### SIGNING IN: 
-https://devtools-dev.ext.devshift.net:8443/console/catalog with your Github Account
-
-In dev_console overview, Please make sure all your services are up and running with at least 1 POD instance.
-
 
 
 ## Configure fabric8-analytics services
@@ -46,7 +40,8 @@ $ vim env.sh
 ```
 
 Editing `env.sh` to add required credentials and tokens.
-* Get `OC_TOKEN` from top-right Dropdown Menu in dev_console by clicking "Copy Login Command"
+* Login into your dev cluster and from top-right Dropdown Menu click "Copy Login Command"
+* Execute the Copied login command into the shell
 * Get `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` from [AWS Console](https://console.aws.amazon.com/iam/home?#/security_credentials)
 * Generate new and set `RDS_PASSWORD`
 * `GITHUB_API_TOKENS` from https://github.com/settings/tokens
