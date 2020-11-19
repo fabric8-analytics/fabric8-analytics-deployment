@@ -77,4 +77,5 @@ export SENTRY_DSN=''
 # If "Snyk CVE Ingestion" is required then we need to set SNYK secrets as below. 
 export SNYK_TOKEN='not-set'
 export SNYK_ISS='not-set'
+export ENCRYPTION_KEY_FOR_SNYK_TOKEN='not-set'
 
