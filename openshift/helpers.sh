@@ -41,6 +41,7 @@ function deploy_secrets() {
     -p RDS_PASSWORD="$(echo -n "${RDS_PASSWORD}" | base64)" \
     -p SNYK_TOKEN="$(echo -n "${SNYK_TOKEN}" | base64)" \
     -p SNYK_ISS="$(echo -n "${SNYK_ISS}" | base64)" \
+    -p ENCRYPTION_KEY_FOR_SNYK_TOKEN="$(/bin/echo -n "${ENCRYPTION_KEY_FOR_SNYK_TOKEN}" | base64)" \
     -p CVAE_NPM_INSIGHTS_BUCKET="$(echo -n "${USER_ID}-cvae-npm-insights" | base64)" \
     -p HPF_PYPI_INSIGHTS_BUCKET="$(echo -n "${USER_ID}-hpf-pypi-insights" | base64)" \
     -p HPF_MAVEN_INSIGHTS_BUCKET="$(echo -n "${USER_ID}-hpf-maven-insights" | base64)" \
