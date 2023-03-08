@@ -99,7 +99,7 @@ function allocate_aws_rds() {
         --db-instance-class "${RDS_INSTANCE_CLASS}" \
         --db-name "${RDS_DBNAME}" \
         --engine postgres \
-        --engine-version "9.6.1" \
+        --engine-version "12.7" \
         --master-username "${RDS_DBADMIN}" \
         --master-user-password "${RDS_PASSWORD}" \
         --publicly-accessible \
